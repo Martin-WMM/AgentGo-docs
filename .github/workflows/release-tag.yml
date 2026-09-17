@@ -1,0 +1,32 @@
+name: Tag release branch merges
+
+on:
+  pull_request:
+    types: [closed]
+    branches: ['release/**']
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create release tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_BASE_REF#release/}"
+          test -n "$tag"
+          if git rev-parse "$tag" >/dev/null 2>&1; then
+            echo "Tag $tag already exists; nothing to do."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$tag" -m "Release $tag"
+          git push origin "$tag"
