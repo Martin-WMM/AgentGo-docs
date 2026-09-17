@@ -1,0 +1,27 @@
+{
+  "name": "@clawforge/docs-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "lint": "eslint .",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@clawforge/ui": "workspace:*",
+    "@iconify/vue": "^4.3.0",
+    "vue": "^3.5.13",
+    "vue-i18n": "^11.1.2",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.3",
+    "@tailwindcss/vite": "^4.0.12",
+    "jsdom": "^26.0.0",
+    "tailwindcss": "^4.0.12",
+    "vite": "^6.2.2",
+    "vitest": "^3.0.9"
+  }
+}
