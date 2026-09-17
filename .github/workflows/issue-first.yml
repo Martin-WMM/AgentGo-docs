@@ -18,7 +18,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ ! "$PR_BODY" =~ (close[sd]?|fix(e[sd])?|resolve[sd]?|ref(erence[sd]?)?|related[[:space:]]+to)[[:space:]]+#[0-9]+ ]]; then
+          issue_pattern='(close[sd]?|fix(e[sd])?|resolve[sd]?|ref(erence[sd]?)?|related[[:space:]]+to)[[:space:]]+#[0-9]+'
+          if [[ ! "$PR_BODY" =~ $issue_pattern ]]; then
             echo "Every pull request must reference a GitHub Issue, for example: Closes #123."
             exit 1
           fi
