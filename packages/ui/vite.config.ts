@@ -6,6 +6,6 @@ export default defineConfig({
   test: { environment: 'jsdom' },
   build: {
     lib: { entry: 'src/index.ts', formats: ['es'], fileName: 'index' },
-    rollupOptions: { external: ['vue', 'reka-ui', 'lucide-vue-next'] },
+    rollupOptions: { external: ['vue', 'reka-ui'] },
   },
 });
