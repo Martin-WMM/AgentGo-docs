@@ -34,6 +34,7 @@ AgentGo Docs is a bilingual documentation project for AgentGo, an extensible int
 
 - Every commit runs compliance, formatting, typecheck, test, build, dependency/security, and secret scanning checks.
 - Merges into `main` build the app with pnpm and publish the generated static site to `deploy`.
+- Merges into `main` build and publish the Docker image to GHCR, then create a GitHub Release with a compressed image archive as an asset.
 - Merges into `release/<name>` create tag `<name>` if it does not already exist.
 - CI must fail on any error; warnings must not be used to bypass a required check.
 - The repository must keep PR, issue, security, contribution, and code-of-conduct guidance current.
