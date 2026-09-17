@@ -19,8 +19,11 @@ ClawForge Docs is a bilingual documentation project for ClawForge, an extensible
 
 ## Repository workflow
 
+- Every bug, task, improvement, documentation change, and new requirement starts with a GitHub Issue. Describe the context, expected outcome, acceptance criteria, and relevant labels in the issue before creating implementation branches or pull requests.
 - Protected branches: `main` and `release/*` must not accept direct pushes.
 - Intended flow: `main` -> `release/<name>` -> `feature/*` or `fix/*` -> PR -> `release/<name>` -> PR -> `main`.
+- `release/*` branches are long-lived release integration branches and must never be deleted automatically or manually as part of a merge. `feature/*` and `fix/*` branches are short-lived and are deleted automatically after their PR is merged.
+- Every pull request must reference at least one issue using GitHub closing syntax such as `Closes #123`, except for repository-maintenance changes that are explicitly tracked by a maintenance issue.
 - `deploy` is a generated GitHub Pages branch. It is updated only by the deployment workflow after a PR is merged into `main`; never edit it manually.
 - Every commit must change no more than 200 source/config lines total (added plus deleted). Generated dependency lockfiles are excluded from this count and must remain reproducible; split all other larger work into coherent commits before committing.
 - Commit format is `<emoji>[<type>]: <message>`, for example `✨[feat]: add bilingual navigation` or `🛠️[fix]: correct dark mode persistence`.

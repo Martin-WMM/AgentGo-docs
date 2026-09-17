@@ -2,6 +2,12 @@
 
 <!-- What changed and why? -->
 
+## Linked issue
+
+<!-- Required: use GitHub closing syntax, for example `Closes #123`. -->
+
+Closes #
+
 ## Change type
 
 - [ ] Feature
@@ -20,6 +26,7 @@
 - [ ] I checked both `zh-CN` and `en-US` when user-facing copy changed.
 - [ ] I checked light and dark themes when UI changed.
 - [ ] I used Iconify for every icon.
+- [ ] This PR is linked to an issue and the issue describes the acceptance criteria.
 
 ## Screenshots / notes
 
