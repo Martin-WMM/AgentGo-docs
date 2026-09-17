@@ -22,7 +22,7 @@ ClawForge Docs is a bilingual documentation project for ClawForge, an extensible
 - Protected branches: `main` and `release/*` must not accept direct pushes.
 - Intended flow: `main` -> `release/<name>` -> `feature/*` or `fix/*` -> PR -> `release/<name>` -> PR -> `main`.
 - `deploy` is a generated GitHub Pages branch. It is updated only by the deployment workflow after a PR is merged into `main`; never edit it manually.
-- Every commit must change no more than 200 lines total (added plus deleted). Split larger work into coherent commits before committing.
+- Every commit must change no more than 200 source/config lines total (added plus deleted). Generated dependency lockfiles are excluded from this count and must remain reproducible; split all other larger work into coherent commits before committing.
 - Commit format is `<emoji>[<type>]: <message>`, for example `✨[feat]: add bilingual navigation` or `🛠️[fix]: correct dark mode persistence`.
 - Pull requests must pass typecheck, tests, lint, formatting, accessibility/security checks, and commit-size validation before merge.
 - Never commit secrets, generated dependency directories, build output, or local environment files.

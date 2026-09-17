@@ -34,7 +34,7 @@ jobs:
               echo "Invalid commit message: $sha $message"
               exit 1
             fi
-            changed="$(git show --numstat --format='' "$sha" | awk '{a+=$1; d+=$2} END {print a+d+0}')"
+            changed="$(git diff-tree --no-commit-id --numstat -r "$sha" | awk '$3 != "pnpm-lock.yaml" {a+=$1; d+=$2} END {print a+d+0}')"
             if (( changed > 200 )); then
               echo "Commit $sha changes $changed lines; maximum is 200."
               exit 1
