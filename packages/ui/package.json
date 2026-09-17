@@ -28,7 +28,7 @@
     "jsdom": "^26.0.0",
     "tailwindcss": "^4.0.12",
     "vite": "^6.2.2",
-    "vitest": "^3.0.9",
+    "vitest": "^4.1.11",
     "vue-component-type-helpers": "^2.2.10"
   }
 }
