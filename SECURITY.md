@@ -12,4 +12,4 @@ Include only the minimum sensitive information necessary. Do not include credent
 
 ## Automated checks
 
-Pull requests run dependency audit, secret scanning, static analysis, and build validation. Findings that fail a required check must be fixed before merge.
+Pull requests run dependency audit, static analysis, and build validation. CodeQL and GitHub Dependency Review require GitHub Advanced Security, which is unavailable for the current private-repository plan; they can be enabled when the repository plan supports code scanning. Findings that fail a required check must be fixed before merge.
