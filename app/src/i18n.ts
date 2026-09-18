@@ -12,12 +12,15 @@ export const i18n = createI18n({
   fallbackLocale: 'en-US',
   messages: {
     'zh-CN': {
-      nav: { overview: '概览', components: '组件示例', gettingStarted: '开始使用' },
+      nav: { overview: '概览', components: '组件示例', gettingStarted: '开始使用', docs: '阅读文档', docsHome: '文档首页' },
       actions: {
         toggleTheme: '切换主题',
         switchLanguage: '切换语言',
         viewComponents: '查看组件',
         readGuide: '阅读指南',
+        readDocs: 'Read Docs',
+        download: '下载',
+        share: '分享',
       },
       home: {
         eyebrow: 'AgentGo UI platform',
@@ -55,14 +58,18 @@ export const i18n = createI18n({
         default: '默认',
         warning: '警告',
       },
+      docs: { eyebrow: 'DOCUMENTATION', title: '开始探索 AgentGo', description: '选择一个章节开始阅读，左侧目录支持折叠，右侧可快速跳转当前页面的内容。', pages: '篇文档', moduleSummary: '探索这个模块的核心内容。', previous: '上一篇', next: '下一篇', pagination: '文档分页', toc: '本页目录', author: '作者', date: '日期', keywords: '关键词', searchPlaceholder: '搜索文档、关键词和内容…', noResults: '没有找到匹配的文档', drawioEditor: 'Drawio 编辑器', closeEditor: '关闭编辑器', toggleFullscreen: '切换全屏', downloadEdited: '下载修改后的文件', downloadDrawio: '下载', editDrawio: '打开编辑', notFound: '文档不存在', backToDocs: '返回文档目录', emptyHome: '请在 resources/HOME.md 中添加首页内容。' },
     },
     'en-US': {
-      nav: { overview: 'Overview', components: 'Components', gettingStarted: 'Getting started' },
+      nav: { overview: 'Overview', components: 'Components', gettingStarted: 'Getting started', docs: 'Read Docs', docsHome: 'Documentation home' },
       actions: {
         toggleTheme: 'Toggle theme',
         switchLanguage: 'Switch language',
         viewComponents: 'View components',
         readGuide: 'Read the guide',
+        readDocs: 'Read Docs',
+        download: 'Download',
+        share: 'Share',
       },
       home: {
         eyebrow: 'AgentGo UI platform',
@@ -102,6 +109,7 @@ export const i18n = createI18n({
         default: 'Default',
         warning: 'Warning',
       },
+      docs: { eyebrow: 'DOCUMENTATION', title: 'Explore AgentGo', description: 'Choose a chapter to begin. Collapse the left navigation or jump through the page outline on the right.', pages: 'pages', moduleSummary: 'Explore the core content in this module.', previous: 'Previous', next: 'Next', pagination: 'Documentation pagination', toc: 'On this page', author: 'Author', date: 'Date', keywords: 'Keywords', searchPlaceholder: 'Search docs, keywords, and content…', noResults: 'No matching documents found', drawioEditor: 'Drawio editor', closeEditor: 'Close editor', toggleFullscreen: 'Toggle fullscreen', downloadEdited: 'Download edited file', downloadDrawio: 'Download', editDrawio: 'Open editor', notFound: 'Document not found', backToDocs: 'Back to documentation', emptyHome: 'Add your landing content to resources/HOME.md.' },
     },
   },
 });
