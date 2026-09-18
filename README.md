@@ -1,6 +1,6 @@
-# ClawForge Docs
+# AgentGo Docs
 
-ClawForge Docs is the bilingual documentation site for [ClawForge](https://github.com/Martin-WMM/ClawForge), an extensible intelligent-agent platform centered on a general Agent Loop and harness engineering. It is designed to connect agents with external tools and resources and to support extension and secondary development.
+AgentGo Docs is the bilingual documentation site for AgentGo, an extensible intelligent-agent platform centered on a general Agent Loop and harness engineering. It is designed to connect agents with external tools and resources and to support extension and secondary development.
 
 ## Stack
 
@@ -36,6 +36,18 @@ pnpm format
 pnpm build
 ```
 
+<<<<<<< Updated upstream
+=======
+## Docker image
+
+After a pull request is merged into `main`, GitHub Actions publishes the image to GHCR and creates a GitHub Release containing a compressed Docker image archive.
+
+```bash
+docker pull ghcr.io/martin-wmm/agentgo-docs:latest
+docker run --rm -p 8080:80 ghcr.io/martin-wmm/agentgo-docs:latest
+```
+
+>>>>>>> Stashed changes
 Open the local URL printed by Vite. The app includes locale and theme controls in the header.
 
 ## Contribution
@@ -44,4 +56,4 @@ Read [AGENTS.md](./AGENTS.md), [CONTRIBUTING.md](./CONTRIBUTING.md), and [SECURI
 
 ## License
 
-The project license will be added when the ClawForge distribution license is finalized.
+The project license will be added when the AgentGo distribution license is finalized.

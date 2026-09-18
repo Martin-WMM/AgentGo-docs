@@ -9,7 +9,7 @@ import {
   CardTitle,
   Input,
   Separator,
-} from '@clawforge/ui';
+} from '@agentgo/ui';
 import { useI18n } from 'vue-i18n';
 
 const value = ref('');

@@ -1,4 +1,4 @@
-# Contributing to ClawForge Docs
+# Contributing to AgentGo Docs
 
 ## Before you start
 

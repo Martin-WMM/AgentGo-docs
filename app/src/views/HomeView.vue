@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue';
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@clawforge/ui';
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@agentgo/ui';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
