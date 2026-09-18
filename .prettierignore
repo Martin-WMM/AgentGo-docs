@@ -1,3 +1,14 @@
+# Existing release baseline files that are outside this feature.
+app/index.html
+app/src/views/ComponentsView.vue
+app/tsconfig.json
+app/vite.config.ts
+packages/ui/
+eslint.config.mjs
+package.json
+pnpm-workspace.yaml
+tsconfig.json
+.prettierrc.json
 app/src/content.ts
 app/src/style.css
 app/src/views/DocPageView.vue
