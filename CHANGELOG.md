@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to ClawForge Docs are recorded here.
+All notable changes to AgentGo Docs are recorded here.
 
 ## [Unreleased]
 

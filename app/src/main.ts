@@ -1,6 +1,6 @@
 import { createApp } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
-import '@clawforge/ui/styles.css';
+import '@agentgo/ui/styles.css';
 import './style.css';
 import App from './App.vue';
 import HomeView from './views/HomeView.vue';

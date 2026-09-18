@@ -1,10 +1,10 @@
 {
-  "name": "clawforge-docs",
+  "name": "agentgo-docs",
   "private": true,
   "packageManager": "pnpm@10.28.1",
   "scripts": {
-    "dev": "pnpm --filter @clawforge/docs-app dev",
-    "build": "pnpm --filter @clawforge/ui build && pnpm --filter @clawforge/docs-app build",
+    "dev": "pnpm --filter @agentgo/docs-app dev",
+    "build": "pnpm --filter @agentgo/ui build && pnpm --filter @agentgo/docs-app build",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "format": "prettier --write .",

@@ -1,13 +1,13 @@
-# ClawForge Docs Agent Instructions
+# AgentGo Docs Agent Instructions
 
 ## Project identity
 
-ClawForge Docs is a bilingual documentation project for ClawForge, an extensible intelligent-agent platform built around a general Agent Loop and harness engineering. The documentation must explain the platform clearly to developers who want to use, integrate, extend, or build on ClawForge.
+AgentGo Docs is a bilingual documentation project for AgentGo, an extensible intelligent-agent platform built around a general Agent Loop and harness engineering. The documentation must explain the platform clearly to developers who want to use, integrate, extend, or build on AgentGo.
 
 ## Code requirements
 
 - Use Vue 3, TypeScript, Vite, pnpm workspaces, Tailwind CSS 4, and shadcn-vue-compatible components.
-- Keep the workspace split between `app` and `packages/ui`; shared UI belongs in `@clawforge/ui`.
+- Keep the workspace split between `app` and `packages/ui`; shared UI belongs in `@agentgo/ui`.
 - Support Simplified Chinese (`zh-CN`) and English (`en-US`) from the first implementation. All user-facing copy must have both translations; do not hard-code interface text in templates.
 - Persist the selected locale and provide a visible language switcher. Use English as the fallback locale when a translation key is missing.
 - Support light and dark themes. Persist the selected theme, respect the system preference on first visit, and expose a visible theme switcher.
@@ -19,8 +19,11 @@ ClawForge Docs is a bilingual documentation project for ClawForge, an extensible
 
 ## Repository workflow
 
+- Every bug, task, improvement, documentation change, and new requirement starts with a GitHub Issue. Describe the context, expected outcome, acceptance criteria, and relevant labels in the issue before creating implementation branches or pull requests.
 - Protected branches: `main` and `release/*` must not accept direct pushes.
 - Intended flow: `main` -> `release/<name>` -> `feature/*` or `fix/*` -> PR -> `release/<name>` -> PR -> `main`.
+- `release/*` branches are long-lived release integration branches and must never be deleted automatically or manually as part of a merge. `feature/*` and `fix/*` branches are short-lived and are deleted automatically after their PR is merged.
+- Every pull request must reference at least one issue using GitHub closing syntax such as `Closes #123`, except for repository-maintenance changes that are explicitly tracked by a maintenance issue.
 - `deploy` is a generated GitHub Pages branch. It is updated only by the deployment workflow after a PR is merged into `main`; never edit it manually.
 - Every commit must change no more than 200 source/config lines total (added plus deleted). Generated dependency lockfiles are excluded from this count and must remain reproducible; split all other larger work into coherent commits before committing.
 - Commit format is `<emoji>[<type>]: <message>`, for example `✨[feat]: add bilingual navigation` or `🛠️[fix]: correct dark mode persistence`.
@@ -31,6 +34,7 @@ ClawForge Docs is a bilingual documentation project for ClawForge, an extensible
 
 - Every commit runs compliance, formatting, typecheck, test, build, dependency/security, and secret scanning checks.
 - Merges into `main` build the app with pnpm and publish the generated static site to `deploy`.
+- Merges into `main` build and publish the Docker image to GHCR, then create a GitHub Release with a compressed image archive as an asset.
 - Merges into `release/<name>` create tag `<name>` if it does not already exist.
 - CI must fail on any error; warnings must not be used to bypass a required check.
 - The repository must keep PR, issue, security, contribution, and code-of-conduct guidance current.
