@@ -22,8 +22,7 @@ export const i18n = createI18n({
       home: {
         eyebrow: 'AgentGo UI platform',
         title: '构建清晰、可靠的开发体验。',
-        description:
-          'AgentGo Docs 是一个基于 Vue、Tailwind CSS 和 shadcn-vue 的文档与组件工作台。',
+        description: 'AgentGo Docs 是一个基于 Vue、Tailwind CSS 和 shadcn-vue 的文档与组件工作台。',
         cards: {
           modern: {
             title: '现代技术栈',
