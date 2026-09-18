@@ -105,28 +105,6 @@ function drawioCard(href: string, sourcePath: string) {
   const filename = href.split('/').pop() || 'diagram.drawio';
   return `<div class="resource-card resource-card--drawio" data-drawio-card data-drawio-source="${encodeURIComponent(xml)}" data-drawio-name="${escapeHtml(filename)}"><span class="resource-card__badge">Drawio</span><span class="resource-card__info"><strong>${escapeHtml(filename)}</strong><small>Drawio diagram</small></span><span class="resource-card__actions"><button type="button" data-drawio-action="download"></button><button type="button" data-drawio-action="edit"></button></span></div>`;
 }
-function drawioPreview(href: string, sourcePath: string) {
-  const raw = resourceTextFiles[resourcePath(sourcePath, href)];
-  if (!raw) return resourceCard(href, '', sourcePath, 'drawio');
-  const xml = typeof raw === 'string' ? raw : raw.default;
-  const document = new DOMParser().parseFromString(xml, 'application/xml');
-  const cells = [...document.querySelectorAll('mxCell')];
-  const vertices = cells.filter((cell) => cell.getAttribute('vertex') === '1').map((cell) => {
-    const geometry = cell.querySelector('mxGeometry');
-    const x = Number(geometry?.getAttribute('x') || 0); const y = Number(geometry?.getAttribute('y') || 0);
-    const width = Number(geometry?.getAttribute('width') || 120); const height = Number(geometry?.getAttribute('height') || 60);
-    const style = Object.fromEntries((cell.getAttribute('style') || '').split(';').filter(Boolean).map((item) => { const [key, value] = item.split('='); return [key, value || '']; }));
-    const value = (cell.getAttribute('value') || '').replace(/<br\s*\/?>(\n)?/gi, '\n').replace(/<[^>]+>/g, '');
-    return { id: cell.getAttribute('id') || '', x, y, width, height, value, style };
-  });
-  const byId = new Map(vertices.map((vertex) => [vertex.id, vertex]));
-  const edges = cells.filter((cell) => cell.getAttribute('edge') === '1').map((cell) => ({ source: byId.get(cell.getAttribute('source') || ''), target: byId.get(cell.getAttribute('target') || '') })).filter((edge) => edge.source && edge.target);
-  const maxX = Math.max(640, ...vertices.map((vertex) => vertex.x + vertex.width + 40));
-  const maxY = Math.max(360, ...vertices.map((vertex) => vertex.y + vertex.height + 40));
-  const lines = edges.map(({ source, target }) => `<line x1="${source!.x + source!.width / 2}" y1="${source!.y + source!.height / 2}" x2="${target!.x + target!.width / 2}" y2="${target!.y + target!.height / 2}" stroke="#94a3b8" stroke-width="2" marker-end="url(#drawio-arrow)" />`).join('');
-  const shapes = vertices.map((vertex) => { const fill = vertex.style.fillColor || '#ffffff'; const stroke = vertex.style.strokeColor || '#64748b'; const radius = vertex.style.rounded === '1' ? 10 : 2; const lines = vertex.value.split('\n'); return `<g><rect x="${vertex.x}" y="${vertex.y}" width="${vertex.width}" height="${vertex.height}" rx="${radius}" fill="${escapeHtml(fill)}" stroke="${escapeHtml(stroke)}" stroke-width="2" />${lines.map((line, index) => `<text x="${vertex.x + vertex.width / 2}" y="${vertex.y + vertex.height / 2 + index * 16}" text-anchor="middle" dominant-baseline="middle" fill="${escapeHtml(vertex.style.fontColor || '#0f172a')}" font-size="14">${escapeHtml(line)}</text>`).join('')}</g>`; }).join('');
-  return `<figure class="drawio-preview" data-drawio-source="${encodeURIComponent(xml)}" role="button" tabindex="0"><svg viewBox="0 0 ${maxX} ${maxY}" role="img" aria-label="Drawio diagram"><defs><marker id="drawio-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#94a3b8" /></marker></defs>${lines}${shapes}</svg><figcaption>${escapeHtml(href.split('/').pop() || 'Drawio')}</figcaption></figure>`;
-}
 function renderMarkdown(content: string, sourcePath: string) {
   const toc: TocItem[] = [];
   const renderer = new marked.Renderer();
