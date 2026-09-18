@@ -37,13 +37,13 @@ jobs:
           docker build --tag "$image:$VERSION" --tag "$image:latest" .
           docker push "$image:$VERSION"
           docker push "$image:latest"
-          docker save "$image:$VERSION" | gzip > "clawforge-docs-$VERSION.tar.gz"
+          docker save "$image:$VERSION" | gzip > "agentgo-docs-$VERSION.tar.gz"
 
       - name: Create GitHub Release and upload image asset
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_TAG: docs-${{ github.event.pull_request.merge_commit_sha }}
-          IMAGE_ARCHIVE: clawforge-docs-docs-${{ github.event.pull_request.merge_commit_sha }}.tar.gz
+          IMAGE_ARCHIVE: agentgo-docs-docs-${{ github.event.pull_request.merge_commit_sha }}.tar.gz
           REPOSITORY: ${{ github.repository }}
           MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
         shell: bash
@@ -52,5 +52,5 @@ jobs:
           gh release create "$RELEASE_TAG" "$IMAGE_ARCHIVE" \
             --repo "$REPOSITORY" \
             --target "$MERGE_SHA" \
-            --title "ClawForge Docs $RELEASE_TAG" \
+            --title "AgentGo Docs $RELEASE_TAG" \
             --generate-notes
