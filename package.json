@@ -2,6 +2,11 @@
   "name": "agentgo-docs",
   "private": true,
   "packageManager": "pnpm@10.28.1",
+  "pnpm": {
+    "overrides": {
+      "lodash-es": "4.18.1"
+    }
+  },
   "scripts": {
     "dev": "pnpm --filter @agentgo/docs-app dev",
     "build": "pnpm --filter @agentgo/ui build && pnpm --filter @agentgo/docs-app build",
