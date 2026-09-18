@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue';
-import { Button } from '@clawforge/ui';
+import { Button } from '@agentgo/ui';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t, locale } = useI18n();
-const dark = ref(localStorage.getItem('clawforge-theme') === 'dark');
+const dark = ref(localStorage.getItem('agentgo-theme') === 'dark');
 const localeLabel = computed(() => (locale.value === 'zh-CN' ? 'EN' : '中文'));
 
 document.documentElement.classList.toggle('dark', dark.value);
@@ -13,12 +13,12 @@ document.documentElement.classList.toggle('dark', dark.value);
 function toggleTheme() {
   dark.value = !dark.value;
   document.documentElement.classList.toggle('dark', dark.value);
-  localStorage.setItem('clawforge-theme', dark.value ? 'dark' : 'light');
+  localStorage.setItem('agentgo-theme', dark.value ? 'dark' : 'light');
 }
 
 function toggleLocale() {
   locale.value = locale.value === 'zh-CN' ? 'en-US' : 'zh-CN';
-  localStorage.setItem('clawforge-locale', locale.value);
+  localStorage.setItem('agentgo-locale', locale.value);
 }
 </script>
 
@@ -30,7 +30,7 @@ function toggleLocale() {
           <span class="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground"
             >C</span
           >
-          ClawForge Docs
+          AgentGo Docs
         </RouterLink>
         <div class="flex items-center gap-2">
           <RouterLink

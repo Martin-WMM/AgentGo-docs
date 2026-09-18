@@ -41,7 +41,7 @@ importers:
 
   app:
     dependencies:
-      '@clawforge/ui':
+      '@agentgo/ui':
         specifier: workspace:*
         version: link:../packages/ui
       '@iconify/vue':

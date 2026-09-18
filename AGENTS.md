@@ -1,13 +1,13 @@
-# ClawForge Docs Agent Instructions
+# AgentGo Docs Agent Instructions
 
 ## Project identity
 
-ClawForge Docs is a bilingual documentation project for ClawForge, an extensible intelligent-agent platform built around a general Agent Loop and harness engineering. The documentation must explain the platform clearly to developers who want to use, integrate, extend, or build on ClawForge.
+AgentGo Docs is a bilingual documentation project for AgentGo, an extensible intelligent-agent platform built around a general Agent Loop and harness engineering. The documentation must explain the platform clearly to developers who want to use, integrate, extend, or build on AgentGo.
 
 ## Code requirements
 
 - Use Vue 3, TypeScript, Vite, pnpm workspaces, Tailwind CSS 4, and shadcn-vue-compatible components.
-- Keep the workspace split between `app` and `packages/ui`; shared UI belongs in `@clawforge/ui`.
+- Keep the workspace split between `app` and `packages/ui`; shared UI belongs in `@agentgo/ui`.
 - Support Simplified Chinese (`zh-CN`) and English (`en-US`) from the first implementation. All user-facing copy must have both translations; do not hard-code interface text in templates.
 - Persist the selected locale and provide a visible language switcher. Use English as the fallback locale when a translation key is missing.
 - Support light and dark themes. Persist the selected theme, respect the system preference on first visit, and expose a visible theme switcher.

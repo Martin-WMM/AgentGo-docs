@@ -3,7 +3,7 @@ import { createI18n } from 'vue-i18n';
 export const locales = ['zh-CN', 'en-US'] as const;
 export type Locale = (typeof locales)[number];
 
-const savedLocale = localStorage.getItem('clawforge-locale') as Locale | null;
+const savedLocale = localStorage.getItem('agentgo-locale') as Locale | null;
 const locale: Locale = savedLocale && locales.includes(savedLocale) ? savedLocale : 'zh-CN';
 
 export const i18n = createI18n({
@@ -20,10 +20,9 @@ export const i18n = createI18n({
         readGuide: '阅读指南',
       },
       home: {
-        eyebrow: 'ClawForge UI platform',
+        eyebrow: 'AgentGo UI platform',
         title: '构建清晰、可靠的开发体验。',
-        description:
-          'ClawForge Docs 是一个基于 Vue、Tailwind CSS 和 shadcn-vue 的文档与组件工作台。',
+        description: 'AgentGo Docs 是一个基于 Vue、Tailwind CSS 和 shadcn-vue 的文档与组件工作台。',
         cards: {
           modern: {
             title: '现代技术栈',
@@ -42,7 +41,7 @@ export const i18n = createI18n({
       components: {
         eyebrow: '基础组件',
         title: '组件示例',
-        description: '来自 @clawforge/ui 的可复用组件。',
+        description: '来自 @agentgo/ui 的可复用组件。',
         controls: '控件',
         input: '输入内容...',
         submit: '提交',
@@ -66,10 +65,10 @@ export const i18n = createI18n({
         readGuide: 'Read the guide',
       },
       home: {
-        eyebrow: 'ClawForge UI platform',
+        eyebrow: 'AgentGo UI platform',
         title: 'Build clear, reliable developer experiences.',
         description:
-          'ClawForge Docs is a Vue, Tailwind CSS, and shadcn-vue workspace for documentation and components.',
+          'AgentGo Docs is a Vue, Tailwind CSS, and shadcn-vue workspace for documentation and components.',
         cards: {
           modern: {
             title: 'Modern stack',
@@ -89,7 +88,7 @@ export const i18n = createI18n({
       components: {
         eyebrow: 'Base components',
         title: 'Component examples',
-        description: 'Reusable components from @clawforge/ui.',
+        description: 'Reusable components from @agentgo/ui.',
         controls: 'Controls',
         input: 'Type something...',
         submit: 'Submit',
