@@ -22,15 +22,18 @@ export const i18n = createI18n({
       actions: {
         toggleTheme: '切换主题',
         switchLanguage: '切换语言',
+        viewGithub: '在 GitHub 查看 AgentGo Docs',
         viewComponents: '查看组件',
         readGuide: '阅读指南',
-        readDocs: 'Read Docs',
+        readDocs: '阅读文档',
         download: '下载',
         share: '分享',
       },
       home: {
         eyebrow: 'AgentGo UI platform',
-        title: '构建清晰、可靠的开发体验。',
+        brand: 'Agent Go',
+        slogan: '少思考，多行动',
+        cta: '阅读文档',
         description: 'AgentGo Docs 是一个基于 Vue、Tailwind CSS 和 shadcn-vue 的文档与组件工作台。',
         cards: {
           modern: {
@@ -69,6 +72,7 @@ export const i18n = createI18n({
         title: '开始探索 AgentGo',
         description: '选择一个章节开始阅读，左侧目录支持折叠，右侧可快速跳转当前页面的内容。',
         pages: '篇文档',
+        page: '篇文档',
         moduleSummary: '探索这个模块的核心内容。',
         previous: '上一篇',
         next: '下一篇',
@@ -101,6 +105,7 @@ export const i18n = createI18n({
       actions: {
         toggleTheme: 'Toggle theme',
         switchLanguage: 'Switch language',
+        viewGithub: 'View AgentGo Docs on GitHub',
         viewComponents: 'View components',
         readGuide: 'Read the guide',
         readDocs: 'Read Docs',
@@ -109,7 +114,9 @@ export const i18n = createI18n({
       },
       home: {
         eyebrow: 'AgentGo UI platform',
-        title: 'Build clear, reliable developer experiences.',
+        brand: 'Agent Go',
+        slogan: 'Think Less. Do More.',
+        cta: 'Read the Docs',
         description:
           'AgentGo Docs is a Vue, Tailwind CSS, and shadcn-vue workspace for documentation and components.',
         cards: {
@@ -151,6 +158,7 @@ export const i18n = createI18n({
         description:
           'Choose a chapter to begin. Collapse the left navigation or jump through the page outline on the right.',
         pages: 'pages',
+        page: 'page',
         moduleSummary: 'Explore the core content in this module.',
         previous: 'Previous',
         next: 'Next',

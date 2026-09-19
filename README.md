@@ -1,5 +1,7 @@
 # AgentGo Docs
 
+![AgentGo logo](./app/public/assets/logo-dark-light.png)
+
 AgentGo Docs is the bilingual documentation site for AgentGo, an extensible intelligent-agent platform centered on a general Agent Loop and harness engineering. It is designed to connect agents with external tools and resources and to support extension and secondary development.
 
 ## Stack
