@@ -115,7 +115,13 @@ function renderMarkdown(content: string, sourcePath: string) {
   renderer.heading = ({ text, depth }: Tokens.Heading) => { const id = slugify(text); if (depth <= 3) toc.push({ id, text, level: depth }); return `<h${depth} id="${id}">${text}</h${depth}>`; };
   renderer.image = ({ href, title, text }: Tokens.Image) => resourceKind(href) === 'video' ? `<video class="markdown-video" controls preload="metadata" src="${assetUrl(sourcePath, href)}"></video>` : `<img src="${assetUrl(sourcePath, href)}" alt="${escapeHtml(text)}"${title ? ` title="${escapeHtml(title)}"` : ''} loading="lazy" />`;
   renderer.link = ({ href, title, text }: Tokens.Link) => { const kind = resourceKind(href); if (href.startsWith('./_resources/') && kind === 'drawio') return drawioCard(href, sourcePath); if (href.startsWith('./_resources/') && kind === 'excalidraw') return resourceCard(href, text, sourcePath, kind); if (href.startsWith('./_resources/') && kind === 'video') return `<video class="markdown-video" controls preload="metadata" src="${assetUrl(sourcePath, href)}"></video>`; return `<a href="${href}"${title ? ` title="${escapeHtml(title)}"` : ''}>${text}</a>`; };
-  return { html: marked.parse(content, { renderer }) as string, toc };
+  const html = marked.parse(content, { renderer }) as string;
+  return {
+    html: html
+      .replaceAll('<table>', '<div class="table-scroll"><table>')
+      .replaceAll('</table>', '</table></div>'),
+    toc,
+  };
 }
 
 interface PageVariant { section: string; baseName: string; slug: string; language: ContentLanguage; page: DocPage; }

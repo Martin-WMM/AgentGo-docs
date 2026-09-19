@@ -5,6 +5,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { getPages, getSections } from './content';
+import ThemeLogo from './components/ThemeLogo.vue';
 
 const { t, locale } = useI18n();
 const route = useRoute();
@@ -65,10 +66,20 @@ onMounted(() => {
     <header class="site-header">
       <div class="site-header__inner">
         <RouterLink to="/" class="brand"
-          ><span class="brand__mark">A</span><span>AgentGo <em>Docs</em></span></RouterLink
+          ><ThemeLogo class="brand__logo" /><span>AgentGo <em>Docs</em></span></RouterLink
         >
         <div class="site-header__actions">
           <RouterLink v-if="!isDocs" to="/docs" class="header-link">{{ t('nav.docs') }}</RouterLink>
+          <a
+            class="github-link"
+            href="https://github.com/Martin-WMM/AgentGo-docs"
+            target="_blank"
+            rel="noreferrer"
+            :aria-label="t('actions.viewGithub')"
+            :title="t('actions.viewGithub')"
+          >
+            <Icon icon="lucide:github" class="size-5" aria-hidden="true" />
+          </a>
           <Button
             variant="ghost"
             size="icon"
