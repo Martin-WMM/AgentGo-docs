@@ -44,7 +44,7 @@ jobs:
               echo "Commit $sha changes $changed lines; maximum is 200."
               exit 1
             fi
-          done < <(git rev-list "$range")
+          done < <(git rev-list --first-parent "$range")
       - name: Check required project files
         shell: bash
         run: |
