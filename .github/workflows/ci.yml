@@ -29,6 +29,11 @@ jobs:
             range="${{ github.event.before }}..${{ github.sha }}"
           fi
           while IFS= read -r sha; do
+            parent_count="$(git rev-list --parents -n 1 "$sha" | awk '{print NF - 1}')"
+            if (( parent_count > 1 )); then
+              echo "Skipping merge commit: $sha"
+              continue
+            fi
             message="$(git log -1 --format=%s "$sha")"
             if ! [[ "$message" =~ ^[^[]+\[[a-z]+\]:\ .+ ]]; then
               echo "Invalid commit message: $sha $message"
@@ -39,7 +44,7 @@ jobs:
               echo "Commit $sha changes $changed lines; maximum is 200."
               exit 1
             fi
-          done < <(git rev-list "$range")
+          done < <(git rev-list --first-parent "$range")
       - name: Check required project files
         shell: bash
         run: |

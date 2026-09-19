@@ -15,11 +15,15 @@ const { t } = useI18n();
     </p>
     <div class="mt-8 flex flex-wrap gap-3">
       <Button as-child
+        ><RouterLink to="/docs"
+          >{{ t('actions.readDocs') }}
+          <Icon icon="lucide:book-open" class="ml-2 size-4" aria-hidden="true" /></RouterLink
+      ></Button>
+      <Button as-child
         ><RouterLink to="/components"
           >{{ t('actions.viewComponents') }}
           <Icon icon="lucide:arrow-right" class="ml-2 size-4" aria-hidden="true" /></RouterLink
       ></Button>
-      <Button variant="outline">{{ t('actions.readGuide') }}</Button>
     </div>
     <div class="mt-16 grid gap-4 md:grid-cols-3">
       <Card
