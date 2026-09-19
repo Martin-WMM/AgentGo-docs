@@ -34,6 +34,11 @@ function toggleLocale() {
         </RouterLink>
         <div class="flex items-center gap-2">
           <RouterLink
+            to="/docs"
+            class="hidden rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground sm:block"
+            >{{ t('nav.docs') }}</RouterLink
+          >
+          <RouterLink
             to="/components"
             class="hidden rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground sm:block"
             >{{ t('nav.components') }}</RouterLink
@@ -64,6 +69,9 @@ function toggleLocale() {
         <nav class="space-y-1 text-sm">
           <RouterLink to="/" class="block rounded-md px-3 py-2 hover:bg-muted">{{
             t('nav.overview')
+          }}</RouterLink>
+          <RouterLink to="/docs" class="block rounded-md px-3 py-2 hover:bg-muted">{{
+            t('nav.docsHome')
           }}</RouterLink>
           <RouterLink to="/components" class="block rounded-md px-3 py-2 hover:bg-muted">{{
             t('nav.components')
