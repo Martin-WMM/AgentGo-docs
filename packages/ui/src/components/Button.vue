@@ -40,5 +40,7 @@ const classes = computed(() =>
 );
 </script>
 <template>
-  <Primitive :as="asChild ? 'span' : 'button'" :class="classes"><slot /></Primitive>
+  <Primitive :as="asChild ? undefined : 'button'" :as-child="asChild" :class="classes"
+    ><slot
+  /></Primitive>
 </template>

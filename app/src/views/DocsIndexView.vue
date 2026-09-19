@@ -22,25 +22,31 @@ const sections = computed(() => getSections(locale.value));
         :to="`/docs/${section.id}/${section.pages[0].slug}`"
         class="index-card"
       >
-        <span class="index-card__top"
-          ><span class="index-card__number">{{
-            String(sections.indexOf(section) + 1).padStart(2, '0')
-          }}</span
-          ><Icon
-            v-if="section.navIcon"
-            :icon="section.navIcon"
-            class="size-5"
-            aria-hidden="true"
-          /><span v-else-if="section.navEmoji" class="index-card__emoji" aria-hidden="true">{{
-            section.navEmoji
-          }}</span></span
-        >
-        <span>
-          <strong>{{ section.title }}</strong>
+        <span class="index-card__content">
+          <span class="index-card__header">
+            <span class="index-card__number">{{
+              String(sections.indexOf(section) + 1).padStart(2, '0')
+            }}</span>
+            <strong>{{ section.title }}</strong>
+          </span>
           <small class="index-card__summary">{{
             section.summary || t('docs.moduleSummary')
           }}</small>
-          <small>{{ section.pages.length }} {{ t('docs.pages') }}</small>
+          <span class="index-card__meta">
+            <Icon
+              v-if="section.navIcon"
+              :icon="section.navIcon"
+              class="index-card__icon size-5"
+              aria-hidden="true"
+            /><span v-else-if="section.navEmoji" class="index-card__emoji" aria-hidden="true">{{
+              section.navEmoji
+            }}</span>
+            <small>{{
+              section.pages.length +
+              ' ' +
+              t(section.pages.length === 1 ? 'docs.page' : 'docs.pages')
+            }}</small>
+          </span>
         </span>
       </RouterLink>
     </div>

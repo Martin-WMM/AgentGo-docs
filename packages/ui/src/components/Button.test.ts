@@ -12,4 +12,14 @@ describe('Button', () => {
     expect(wrapper.text()).toBe('Continue');
     expect(wrapper.classes()).toContain('bg-secondary');
   });
+
+  it('passes button classes to the slotted element when rendered as a child', () => {
+    const wrapper = mount(Button, {
+      props: { asChild: true },
+      slots: { default: '<a href="/docs">Read Docs</a>' },
+    });
+
+    expect(wrapper.element.tagName).toBe('A');
+    expect(wrapper.classes()).toContain('bg-primary');
+  });
 });
