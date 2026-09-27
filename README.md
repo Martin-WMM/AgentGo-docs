@@ -1,58 +1,41 @@
-# AgentGo Docs
+<p align="center">
+  <img src="app/public/assets/logo-dark-light.png" alt="AgentGo" width="180">
+</p>
 
-![AgentGo logo](./app/public/assets/logo-dark-light.png)
+<h1 align="center">AgentGo Docs</h1>
 
-AgentGo Docs is the bilingual documentation site for AgentGo, an extensible intelligent-agent platform centered on a general Agent Loop and harness engineering. It is designed to connect agents with external tools and resources and to support extension and secondary development.
+<p align="center">
+  <a href="https://github.com/Martin-WMM/AgentGo-docs/actions/workflows/ci.yml"><img src="https://github.com/Martin-WMM/AgentGo-docs/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
+  <a href="https://github.com/Martin-WMM/AgentGo-docs"><img src="https://img.shields.io/github/stars/Martin-WMM/AgentGo-docs" alt="GitHub stars"></a>
+</p>
 
-## Stack
+AgentGo 的双语文档站，覆盖使用、集成、扩展、架构和二次开发。项目内容以简体中文和 English 提供，并支持明暗主题。
 
-- Vue 3 + TypeScript + Vite
-- pnpm workspace Monorepo
-- Tailwind CSS 4
-- shadcn-vue-compatible components in `packages/ui`
-- Iconify for all icons
-- Simplified Chinese and English locales
-- Light and dark themes
+## 快速开始
 
-## Workspace
-
-```text
-app/          Documentation application
-packages/ui/  Shared UI components
-```
-
-## Development
+要求：Node.js 22、pnpm 10.28.1。
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Useful checks:
+质量检查：
 
 ```bash
 pnpm typecheck
 pnpm test
 pnpm lint
-pnpm format
+pnpm exec prettier --check app packages eslint.config.mjs package.json pnpm-workspace.yaml tsconfig.json .prettierrc.json
 pnpm build
 ```
 
-## Docker image
+## 文档目录
 
-After a pull request is merged into `main`, GitHub Actions publishes the image to GHCR and creates a GitHub Release containing a compressed Docker image archive.
+- [快速上手](app/src/resources/快速上手/quick-start_zh.md)
+- [参考文档](app/src/resources/参考文档/README.md)
+- [集成与扩展](app/src/resources/集成与扩展/README.md)
+- [二次开发](app/src/resources/二次开发/README.md)
+- [设计哲学与架构](app/src/resources/设计哲学/system-architecture.md)
 
-```bash
-docker pull ghcr.io/martin-wmm/agentgo-docs:latest
-docker run --rm -p 8080:80 ghcr.io/martin-wmm/agentgo-docs:latest
-```
-
-Open the local URL printed by Vite. The app includes locale and theme controls in the header.
-
-## Contribution
-
-Read [AGENTS.md](./AGENTS.md), [CONTRIBUTING.md](./CONTRIBUTING.md), and [SECURITY.md](./SECURITY.md) before contributing. Changes flow through feature or fix branches and pull requests; `main`, `release/*`, and `deploy` are governed branches.
-
-## License
-
-The project license will be added when the AgentGo distribution license is finalized.
+贡献前请阅读 [AGENTS.md](AGENTS.md)、[CONTRIBUTING.md](CONTRIBUTING.md) 和 [SECURITY.md](SECURITY.md)。
