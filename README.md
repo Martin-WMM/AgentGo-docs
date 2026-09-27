@@ -39,3 +39,7 @@ pnpm build
 - [设计哲学与架构](app/src/resources/设计哲学/system-architecture.md)
 
 贡献前请阅读 [AGENTS.md](AGENTS.md)、[CONTRIBUTING.md](CONTRIBUTING.md) 和 [SECURITY.md](SECURITY.md)。
+
+## 许可证
+
+本项目采用 [AgentGo Proprietary License](LICENSE)。版权所有归 Martin M. W.（王美民）所有。任何使用、修改、分发或商业用途，均须先通过 `blessedwmm@gmail.com` 获得本人书面确认授权。
