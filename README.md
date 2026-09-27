@@ -1,45 +1,67 @@
 <p align="center">
-  <img src="app/public/assets/logo-dark-light.png" alt="AgentGo" width="180">
+  <img src="app/src/resources/agentgo-logo.png" alt="AgentGo Logo" width="180">
 </p>
 
 <h1 align="center">AgentGo Docs</h1>
 
 <p align="center">
   <a href="https://github.com/Martin-WMM/AgentGo-docs/actions/workflows/ci.yml"><img src="https://github.com/Martin-WMM/AgentGo-docs/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
-  <a href="https://github.com/Martin-WMM/AgentGo-docs"><img src="https://img.shields.io/github/stars/Martin-WMM/AgentGo-docs" alt="GitHub stars"></a>
+  <a href="https://img.shields.io/github/stars/Martin-WMM/AgentGo-docs"><img src="https://img.shields.io/github/stars/Martin-WMM/AgentGo-docs" alt="GitHub stars"></a>
 </p>
 
-AgentGo 的双语文档站，覆盖使用、集成、扩展、架构和二次开发。项目内容以简体中文和 English 提供，并支持明暗主题。
+## 1. Introduction / 简介
 
-## 快速开始
+AgentGo Docs is the bilingual documentation site for using, integrating, extending,
+operating, and developing AgentGo across the backend, web UI, and desktop client.
 
-要求：Node.js 22、pnpm 10.28.1。
+AgentGo Docs 是 AgentGo 双语文档站，覆盖后端、Web UI 和桌面客户端的使用、集成、扩展、运维及二次开发。
+
+## 2. Updates / 更新
+
+- Simplified Chinese and English documentation are maintained together.
+- Guides cover quick start, reference, integration, secondary development, and architecture.
+- Documentation quality, dependency, and security checks run in CI。
+
+- 同步维护简体中文和 English 文档。
+- 内容覆盖快速上手、参考文档、集成扩展、二次开发和系统架构。
+- CI 执行文档质量、依赖和安全检查。
+
+## 3. Getting Started / 快速开始
+
+Requirements / 环境要求: Node.js 22 and pnpm 10.28.1。
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-质量检查：
+Useful sections / 常用文档:
 
-```bash
-pnpm typecheck
-pnpm test
-pnpm lint
-pnpm exec prettier --check app packages eslint.config.mjs package.json pnpm-workspace.yaml tsconfig.json .prettierrc.json
-pnpm build
-```
+- [Quick Start / 快速上手](app/src/resources/快速上手/quick-start_zh.md)
+- [Reference / 参考文档](app/src/resources/参考文档/README.md)
+- [Integration / 集成与扩展](app/src/resources/集成与扩展/README.md)
+- [Secondary Development / 二次开发](app/src/resources/二次开发/README.md)
+- [Architecture / 设计哲学与架构](app/src/resources/设计哲学/system-architecture.md)
 
-## 文档目录
+## 4. Contribution / 参与贡献
 
-- [快速上手](app/src/resources/快速上手/quick-start_zh.md)
-- [参考文档](app/src/resources/参考文档/README.md)
-- [集成与扩展](app/src/resources/集成与扩展/README.md)
-- [二次开发](app/src/resources/二次开发/README.md)
-- [设计哲学与架构](app/src/resources/设计哲学/system-architecture.md)
+Read [AGENTS.md](AGENTS.md), [CONTRIBUTING.md](CONTRIBUTING.md), and
+[SECURITY.md](SECURITY.md). Document every externally visible backend, UI, or desktop
+contract change here。
 
-贡献前请阅读 [AGENTS.md](AGENTS.md)、[CONTRIBUTING.md](CONTRIBUTING.md) 和 [SECURITY.md](SECURITY.md)。
+请阅读 [AGENTS.md](AGENTS.md)、[CONTRIBUTING.md](CONTRIBUTING.md) 和
+[SECURITY.md](SECURITY.md)，并在此记录所有对外可见的后端、UI 或桌面端契约变更。
 
-## 许可证
+## 5. License / 许可证
 
-本项目采用 [AgentGo Proprietary License](LICENSE)。版权所有归 Martin M. W.（王美民）所有。任何使用、修改、分发或商业用途，均须先通过 `blessedwmm@gmail.com` 获得本人书面确认授权。
+This project is governed by the [AgentGo Proprietary License](LICENSE)。All rights
+belong to Martin M. W. (王美民). Any use, modification, distribution, or commercial
+use requires prior written confirmation at `blessedwmm@gmail.com`。
+
+本项目采用 [AgentGo Proprietary License](LICENSE)。所有权利归 Martin M. W.（王美民）所有。
+任何使用、修改、分发或商业用途，均须先通过 `blessedwmm@gmail.com` 获得本人书面确认授权。
+
+## Related Projects / 相关项目
+
+- [AgentGo Backend](https://github.com/Martin-WMM/AgentGo-backend) · [AgentGo UI](https://github.com/Martin-WMM/AgentGo-UI)
+- [AgentGo Desktop](https://github.com/Martin-WMM/AgentGo-desktop)
