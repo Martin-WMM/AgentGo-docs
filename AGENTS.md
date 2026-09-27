@@ -2,46 +2,106 @@
 
 ## Project identity
 
-AgentGo Docs is a bilingual documentation project for AgentGo, an extensible intelligent-agent platform built around a general Agent Loop and harness engineering. The documentation must explain the platform clearly to developers who want to use, integrate, extend, or build on AgentGo.
+AgentGo Docs is the bilingual documentation site and cross-repository contract reference for AgentGo. It explains how to use, integrate, extend, operate, and develop AgentGo across the backend, Web UI, and desktop client.
 
-## Code requirements
+The local directory is named `ClawForge-docs` for historical reasons, but the project and GitHub repository are named **AgentGo Docs**. Use **AgentGo** in all new documentation, issue titles, branch names, release notes, and user-facing project references.
+
+## Repository boundaries
+
+- This repository owns documentation, examples, integration guidance, architecture decisions, API explanations, and release notes.
+- `AgentGo-backend` is the authority for server behavior, domain rules, authorization, API contracts, and event contracts.
+- `AgentGo-UI` is the Web management and Agent entry point.
+- `AgentGo-desktop` is the Electron client for Linux, macOS, and Windows.
+- Do not duplicate backend authorization rules or data definitions in this repository. Describe them from the published contract.
+- Every externally visible backend, UI, or desktop contract change must be documented here before the corresponding release is considered complete.
+
+## Code and content requirements
 
 - Use Vue 3, TypeScript, Vite, pnpm workspaces, Tailwind CSS 4, and shadcn-vue-compatible components.
 - Keep the workspace split between `app` and `packages/ui`; shared UI belongs in `@agentgo/ui`.
-- Support Simplified Chinese (`zh-CN`) and English (`en-US`) from the first implementation. All user-facing copy must have both translations; do not hard-code interface text in templates.
-- Persist the selected locale and provide a visible language switcher. Use English as the fallback locale when a translation key is missing.
+- Support Simplified Chinese (`zh-CN`) and English (`en-US`) from the first implementation. User-facing copy must have both translations and must not be hard-coded in templates.
+- Persist the selected locale and provide a visible language switcher. Use English as the fallback when a translation key is missing.
 - Support light and dark themes. Persist the selected theme, respect the system preference on first visit, and expose a visible theme switcher.
-- Use Iconify for every icon. Use `@iconify/vue` with named icon identifiers; do not add Lucide, Font Awesome, inline SVG icons, emoji icons, or hand-drawn icon components.
+- Use Iconify for every icon through `@iconify/vue` and named icon identifiers. Do not add Lucide, Font Awesome, inline SVG icons, emoji icons, or hand-drawn icon components.
 - Prefer semantic HTML, keyboard navigation, visible focus states, responsive layouts, and accessible names for controls.
 - Use design tokens and Tailwind utilities. Do not duplicate theme colors in component templates.
 - Keep documentation content in typed Vue data or Vue components until a Markdown/content system is explicitly introduced.
-- Add or update a focused test when changing routing, locale behavior, theme behavior, or shared UI behavior.
+- API examples must match the current backend contract, use safe placeholder credentials, and never contain real secrets or personal data.
+- Add or update a focused test when changing routing, locale behavior, theme behavior, shared UI behavior, or content navigation.
 
-## Repository workflow
+## Shared AgentGo conventions
 
-- Every bug, task, improvement, documentation change, and new requirement starts with a GitHub Issue. Describe the context, expected outcome, acceptance criteria, and relevant labels in the issue before creating implementation branches or pull requests.
-- Protected branches: `main` and `release/*` must not accept direct pushes.
-- Intended flow: `main` -> `release/<name>` -> `feature/*` or `fix/*` -> PR -> `release/<name>` -> PR -> `main`.
-- `release/*` branches are long-lived release integration branches and must never be deleted automatically or manually as part of a merge. `feature/*` and `fix/*` branches are short-lived and are deleted automatically after their PR is merged.
-- Every pull request must reference at least one issue using GitHub closing syntax such as `Closes #123`, except for repository-maintenance changes that are explicitly tracked by a maintenance issue.
-- `deploy` is a generated GitHub Pages branch. It is updated only by the deployment workflow after a PR is merged into `main`; never edit it manually.
-- Every commit must change no more than 200 source/config lines total (added plus deleted). Generated dependency lockfiles are excluded from this count and must remain reproducible; split all other larger work into coherent commits before committing.
-- Commit format is `<emoji>[<type>]: <message>`, for example `✨[feat]: add bilingual navigation` or `🛠️[fix]: correct dark mode persistence`.
-- Pull requests must pass typecheck, tests, lint, formatting, accessibility/security checks, and commit-size validation before merge.
-- Never commit secrets, generated dependency directories, build output, or local environment files.
+The four repositories must use the same conventions for branch governance, commit messages, issue tracking, API terminology, identifiers, timestamps, pagination, errors, and permission names.
 
-## CI and release rules
+- Use the backend-published OpenAPI/JSON Schema and event definitions as the source of truth for API examples and data definitions.
+- Use UTC and ISO-8601 timestamps in all examples unless a document explicitly explains another representation.
+- Use the canonical names `User`, `Organization`, `Role`, `Permission`, `Agent`, `Session`, `Task`, `Execution`, `Tool`, `Provider`, and `AuditEvent` consistently.
+- Document breaking changes, compatibility requirements, migration steps, and deprecations in the same change as the contract update.
+- When a contract is not yet published, mark the documentation as provisional rather than inventing a competing schema.
 
-- Every commit runs compliance, formatting, typecheck, test, build, dependency/security, and secret scanning checks.
-- Merges into `main` build the app with pnpm and publish the generated static site to `deploy`.
-- Merges into `main` build and publish the Docker image to GHCR, then create a GitHub Release with a compressed image archive as an asset.
-- Merges into `release/<name>` create tag `<name>` if it does not already exist.
-- CI must fail on any error; warnings must not be used to bypass a required check.
-- The repository must keep PR, issue, security, contribution, and code-of-conduct guidance current.
+## Issue, branch, and pull request workflow
+
+- Every bug, task, improvement, documentation change, and new requirement starts with a GitHub Issue. The issue must include context, expected outcome, acceptance criteria, and relevant labels.
+- Use the shared branch flow:
+
+  ```text
+  main -> release -> feature/<issue-number>-<short-name> or fix/<issue-number>-<short-name>
+       -> PR -> release -> PR -> main
+  ```
+
+- `main` and `release` are protected integration branches and must not receive direct pushes.
+- `feature/*` and `fix/*` are short-lived branches and should be deleted automatically after their PR is merged.
+- `deploy` is a generated deployment branch. It is updated only by the deployment workflow and must never be edited manually.
+- Every pull request must reference at least one issue using GitHub closing syntax such as `Closes #123`, including repository-maintenance changes.
+- Pull requests must describe user impact, validation steps, and documentation or screenshot changes when relevant.
+- A PR may merge only when all required checks pass and the required reviewers approve it.
+
+## Commit requirements
+
+Use the same commit format in all AgentGo repositories:
+
+```text
+<emoji><type>: <message>
+```
+
+Examples:
+
+```text
+✨feat: add bilingual agent runtime guide
+🐛fix: correct permission example for session access
+📝docs: document API compatibility policy
+🔧chore: standardize documentation checks
+```
+
+Allowed types include `feat`, `fix`, `docs`, `refactor`, `test`, `build`, `ci`, `chore`, `perf`, and `security`.
+
+- Each commit must contain no more than 300 changed lines in total (added plus deleted).
+- Generated dependency lockfile changes may be excluded from the count, but lockfiles must remain reproducible.
+- Split larger work into coherent, reviewable commits before committing.
+- Merge commits are exempt from ordinary commit-message validation but must still pass repository checks.
+- Every commit pushed to a branch must trigger the repository's compliance and quality workflows.
+
+## Quality, security, and CI rules
+
+- Every commit and pull request runs commit compliance, formatting, typecheck, tests, lint, build, dependency audit, secret scanning, and security checks appropriate to the repository.
+- CI must fail on errors; warnings must not bypass a required check.
+- Keep the frontend quality baseline aligned with AgentGo-UI and AgentGo-desktop: ESLint, Prettier, TypeScript strict checks, unit tests, accessibility checks, dependency auditing, and CodeQL or an equivalent static security scan.
+- Never commit secrets, credentials, generated dependency directories, build output, coverage output, or local environment files.
+- Keep `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, issue templates, PR templates, and `CODEOWNERS` current.
+
+## Documentation deployment and release
+
+- A merge into `main` builds the documentation site with pnpm and publishes the generated static site to `deploy`.
+- A merge into `main` builds and publishes the Docker image to GHCR.
+- The Docker image must be traceable to the source commit and release metadata.
+- Release notes must identify the included documentation, API, architecture, and compatibility changes.
+- Deployment failures must fail visibly and must not update `deploy` with a partial build.
 
 ## Working agreement for agents
 
-1. Read this file before changing code.
+1. Read this file before changing code or documentation.
 2. Inspect the existing implementation and preserve unrelated user changes.
-3. Make the smallest coherent change, then run the relevant checks.
-4. Report blocked external actions explicitly, especially GitHub operations requiring authentication or repository-plan permissions.
+3. Check the current backend contract before adding or changing API examples.
+4. Make the smallest coherent change, then run the relevant checks.
+5. Do not modify another repository unless the task explicitly includes it.
+6. Report blocked external actions explicitly, especially GitHub operations requiring authentication or repository-plan permissions.
