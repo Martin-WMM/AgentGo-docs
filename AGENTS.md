@@ -51,7 +51,7 @@ The four repositories must use the same conventions for branch governance, commi
 
 - `main` and `release` are protected integration branches and must not receive direct pushes.
 - `feature/*` and `fix/*` are short-lived branches and should be deleted automatically after their PR is merged.
-- `deploy` is a generated deployment branch. It is updated only by the deployment workflow and must never be edited manually.
+- GitHub Pages is published through Actions artifacts; do not create a deployment branch.
 - Every pull request must reference at least one issue using GitHub closing syntax such as `Closes #123`, including repository-maintenance changes.
 - Pull requests must describe user impact, validation steps, and documentation or screenshot changes when relevant.
 - A PR may merge only when all required checks pass and the required reviewers approve it.
@@ -91,11 +91,11 @@ Allowed types include `feat`, `fix`, `docs`, `refactor`, `test`, `build`, `ci`, 
 
 ## Documentation deployment and release
 
-- A merge into `main` builds the documentation site with pnpm and publishes the generated static site to `deploy`.
+- A merge into `main` builds the documentation site with pnpm and publishes the generated static site through GitHub Pages Actions artifacts.
 - A merge into `main` builds and publishes the Docker image to GHCR.
 - The Docker image must be traceable to the source commit and release metadata.
 - Release notes must identify the included documentation, API, architecture, and compatibility changes.
-- Deployment failures must fail visibly and must not update `deploy` with a partial build.
+- Deployment failures must fail visibly and must not publish a partial build.
 
 ## Working agreement for agents
 
