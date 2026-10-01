@@ -87,6 +87,30 @@ function resourcePath(sourcePath: string, target: string) {
   return `${folder}/${target.slice(2)}`;
 }
 function escapeHtml(value: string) { return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
+function statusColor(value: string) { return /^#[0-9a-f]{3,8}$/i.test(value) || /^[a-z]+$/i.test(value) ? value : '#16a34a'; }
+function renderStatusTags(html: string) {
+  return html.replace(/<status\b([^>]*?)(?:\/>|>.*?<\/status>)/gis, (_, attributes: string) => {
+    const value = attributes.match(/\bvalue\s*=\s*["']([^"']*)["']/i)?.[1] || 'unknown';
+    const color = statusColor(attributes.match(/\bcolor\s*=\s*["']([^"']*)["']/i)?.[1] || '');
+    return `<span class="status-tag" style="--status-color: ${escapeHtml(color)}">${escapeHtml(value)}</span>`;
+  });
+}
+function addRequirementColumns(html: string, sourcePath: string) {
+  if (!sourcePath.endsWith('/solved-problems.md')) return html;
+  let requirementNumber = 0;
+  return html.replace(/<table>([\s\S]*?)<\/table>/g, (_, table: string) => {
+    const withHeaders = table.replace(/(<thead>[\s\S]*?<tr>[\s\S]*?)(<\/tr>)/i, '$1<th>需求标号</th><th>需求状态</th>$2');
+    const withRows = withHeaders.replace(/<tbody>([\s\S]*?)<\/tbody>/i, (_, body: string) => {
+      const rows = body.replace(/(<tr>[\s\S]*?)(<\/tr>)/gi, (_row: string, content: string, closing: string) => {
+        requirementNumber += 1;
+        const id = `REQ-${String(requirementNumber).padStart(3, '0')}`;
+        return `${content}<td><code>${id}</code></td><td><status value="规划中" color="" /></td>${closing}`;
+      });
+      return `<tbody>${rows}</tbody>`;
+    });
+    return `<table>${withRows}</table>`;
+  });
+}
 function resourceKind(target: string) {
   const extension = target.toLowerCase().split('?')[0].split('.').pop();
   if (extension === 'drawio' || target.toLowerCase().endsWith('.drawio.xml')) return 'drawio';
@@ -113,11 +137,11 @@ function renderMarkdown(content: string, sourcePath: string) {
     return `<pre><code${lang ? ` class="language-${escapeHtml(lang)}"` : ''}>${escapeHtml(text)}</code></pre>`;
   };
   renderer.heading = ({ text, depth }: Tokens.Heading) => { const id = slugify(text); if (depth <= 3) toc.push({ id, text, level: depth }); return `<h${depth} id="${id}">${text}</h${depth}>`; };
-  renderer.image = ({ href, title, text }: Tokens.Image) => resourceKind(href) === 'video' ? `<video class="markdown-video" controls preload="metadata" src="${assetUrl(sourcePath, href)}"></video>` : `<img src="${assetUrl(sourcePath, href)}" alt="${escapeHtml(text)}"${title ? ` title="${escapeHtml(title)}"` : ''} loading="lazy" />`;
+  renderer.image = ({ href, title, text }: Tokens.Image) => resourceKind(href) === 'video' ? `<video class="markdown-video" controls preload="metadata" src="${assetUrl(sourcePath, href)}"></video>` : `<figure class="markdown-image"><div class="markdown-image__actions"><button type="button" data-image-action="fullscreen"></button><button type="button" data-image-action="download"></button></div><img src="${assetUrl(sourcePath, href)}" alt="${escapeHtml(text)}"${title ? ` title="${escapeHtml(title)}"` : ''} loading="lazy" /><figcaption class="image-caption">${escapeHtml(text)}</figcaption></figure>`;
   renderer.link = ({ href, title, text }: Tokens.Link) => { const kind = resourceKind(href); if (href.startsWith('./_resources/') && kind === 'drawio') return drawioCard(href, sourcePath); if (href.startsWith('./_resources/') && kind === 'excalidraw') return resourceCard(href, text, sourcePath, kind); if (href.startsWith('./_resources/') && kind === 'video') return `<video class="markdown-video" controls preload="metadata" src="${assetUrl(sourcePath, href)}"></video>`; return `<a href="${href}"${title ? ` title="${escapeHtml(title)}"` : ''}>${text}</a>`; };
   const html = marked.parse(content, { renderer }) as string;
   return {
-    html: html
+    html: renderStatusTags(addRequirementColumns(html, sourcePath))
       .replaceAll('<table>', '<div class="table-scroll"><table>')
       .replaceAll('</table>', '</table></div>'),
     toc,
