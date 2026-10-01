@@ -13,11 +13,32 @@ concurrency:
 
 env:
   IMAGE_NAME: ghcr.io/martin-wmm/agentgo-docs
-  IMAGE_TAG: docs-${{ github.sha }}
+  IMAGE_TAG: ${{ github.sha }}
 
 jobs:
+  validate-ref:
+    name: Validate release branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require release branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF_NAME" != release/* ]]; then
+            {
+              echo "## AgentGo Docs Deployment"
+              echo
+              echo "- Environment: TEST"
+              echo "- Status: blocked"
+              echo "- Reason: Deployment TEST can only run from a release/* branch."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "Deployment TEST can only run from a release/* branch; received $GITHUB_REF_NAME."
+            exit 1
+          fi
+
   deploy:
     name: Build and deploy to TEST
+    needs: validate-ref
     runs-on: ubuntu-latest
     environment: test
 
