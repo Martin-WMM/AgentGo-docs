@@ -1,0 +1,7 @@
+services:
+  agentgo-docs:
+    image: ghcr.io/martin-wmm/agentgo-docs:${IMAGE_TAG:?IMAGE_TAG is required}
+    container_name: agentgo-docs
+    restart: unless-stopped
+    ports:
+      - '80:80'
