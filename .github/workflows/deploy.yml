@@ -25,6 +25,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - name: Smoke test deployment entry points
+        run: pnpm smoke:deployment
       - name: Publish to deploy branch
         uses: peaceiris/actions-gh-pages@v4
         with:

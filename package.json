@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "pnpm --filter @agentgo/docs-app dev",
     "build": "pnpm --filter @agentgo/ui build && pnpm --filter @agentgo/docs-app build",
+    "smoke:deployment": "node scripts/deployment-smoke.mjs",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "format": "prettier --write .",
