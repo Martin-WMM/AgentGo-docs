@@ -90,7 +90,7 @@ jobs:
             echo "known_hosts_file=$known_hosts_file"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Upload TEST Compose definition
+      - name: Sync TEST deployment files
         id: upload
         continue-on-error: true
         shell: bash
@@ -104,9 +104,22 @@ jobs:
         run: |
           set -euo pipefail
           ssh_options=(-i "$KEY_FILE" -p "$DEPLOY_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$KNOWN_HOSTS_FILE")
-          ssh "${ssh_options[@]}" "$DEPLOY_USER@$DEPLOY_HOST" "mkdir -p '$DEPLOY_PATH'"
-          scp -i "$KEY_FILE" -P "$DEPLOY_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$KNOWN_HOSTS_FILE" \
-            deploy/docker-compose.test.yml "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/docker-compose.yml"
+          ssh "${ssh_options[@]}" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "DEPLOY_PATH='$DEPLOY_PATH' bash -s" <<'REMOTE_SCRIPT'
+          set -euo pipefail
+          mkdir -p "$DEPLOY_PATH/agentgo-docs-deployment"
+          if [[ ! -s "$DEPLOY_PATH/docker-compose.yml" ]]; then
+            printf '%s\n' \
+              'include:' \
+              '  - path: ./agentgo-docs-deployment/docker-compose-agentgo-docs.yml' \
+              > "$DEPLOY_PATH/docker-compose.yml"
+          elif ! grep -Fqx '  - path: ./agentgo-docs-deployment/docker-compose-agentgo-docs.yml' "$DEPLOY_PATH/docker-compose.yml"; then
+            echo "The shared AgentGo Compose file does not include AgentGo Docs; refusing to overwrite it." >&2
+            exit 1
+          fi
+          REMOTE_SCRIPT
+          rsync -az --delete -e "ssh -i $KEY_FILE -p $DEPLOY_PORT -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$KNOWN_HOSTS_FILE" \
+            agentgo-docs-deployment/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/agentgo-docs-deployment/"
 
       - name: Check whether the image exists on TEST server
         id: server-image-check
@@ -155,9 +168,9 @@ jobs:
           set -euo pipefail
           cd "$DEPLOY_PATH"
           if [[ "$SERVER_IMAGE_EXISTS" != "true" ]]; then
-            docker compose pull
+            docker compose pull agentgo-docs
           fi
-          docker compose up -d --remove-orphans
+          docker compose up -d agentgo-docs
           REMOTE_SCRIPT
 
       - name: Verify TEST deployment
@@ -194,7 +207,7 @@ jobs:
             echo "- Image: $IMAGE_NAME:$IMAGE_TAG"
             echo "- GHCR image check: ${{ steps.image-check.outcome }}"
             echo "- Publish image: ${{ steps.publish.outcome }}"
-            echo "- Upload Compose: ${{ steps.upload.outcome }}"
+            echo "- Sync deployment files: ${{ steps.upload.outcome }}"
             echo "- TEST server image check: ${{ steps.server-image-check.outcome }}"
             echo "- Start service: ${{ steps.deploy.outcome }}"
             echo "- Health check: ${{ steps.verify.outcome }}"
