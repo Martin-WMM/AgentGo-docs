@@ -46,14 +46,28 @@ jobs:
       - name: Check out selected revision
         uses: actions/checkout@v4
 
-      - name: Build and publish Docker image
-        id: publish
+      - name: Check whether the image exists in GHCR
+        id: image-check
         shell: bash
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "${GITHUB_ACTOR}" --password-stdin
+          if docker manifest inspect "$IMAGE_NAME:$IMAGE_TAG" > /dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Image already exists in GHCR; build and push will be skipped."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "Image does not exist in GHCR; build and push will run."
+          fi
+
+      - name: Build and publish Docker image
+        id: publish
+        if: steps.image-check.outputs.exists != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
           docker build --tag "$IMAGE_NAME:$IMAGE_TAG" .
           docker push "$IMAGE_NAME:$IMAGE_TAG"
 
@@ -94,6 +108,28 @@ jobs:
           scp -i "$KEY_FILE" -P "$DEPLOY_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$KNOWN_HOSTS_FILE" \
             deploy/docker-compose.test.yml "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/docker-compose.yml"
 
+      - name: Check whether the image exists on TEST server
+        id: server-image-check
+        continue-on-error: true
+        shell: bash
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          KEY_FILE: ${{ steps.ssh.outputs.key_file }}
+          KNOWN_HOSTS_FILE: ${{ steps.ssh.outputs.known_hosts_file }}
+        run: |
+          set -euo pipefail
+          ssh_options=(-i "$KEY_FILE" -p "$DEPLOY_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$KNOWN_HOSTS_FILE")
+          if ssh "${ssh_options[@]}" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "docker image inspect '$IMAGE_NAME:$IMAGE_TAG' > /dev/null 2>&1"; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Image already exists on the TEST server; pull will be skipped."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "Image is not on the TEST server; pull will run."
+          fi
+
       - name: Pull image and start TEST service
         id: deploy
         continue-on-error: true
@@ -106,16 +142,21 @@ jobs:
           KEY_FILE: ${{ steps.ssh.outputs.key_file }}
           KNOWN_HOSTS_FILE: ${{ steps.ssh.outputs.known_hosts_file }}
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SERVER_IMAGE_EXISTS: ${{ steps.server-image-check.outputs.exists }}
         run: |
           set -euo pipefail
           ssh_options=(-i "$KEY_FILE" -p "$DEPLOY_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$KNOWN_HOSTS_FILE")
-          printf '%s' "$GHCR_TOKEN" | ssh "${ssh_options[@]}" "$DEPLOY_USER@$DEPLOY_HOST" \
-            "docker login ghcr.io --username '${GITHUB_ACTOR}' --password-stdin"
+          if [[ "$SERVER_IMAGE_EXISTS" != "true" ]]; then
+            printf '%s' "$GHCR_TOKEN" | ssh "${ssh_options[@]}" "$DEPLOY_USER@$DEPLOY_HOST" \
+              "docker login ghcr.io --username '${GITHUB_ACTOR}' --password-stdin"
+          fi
           ssh "${ssh_options[@]}" "$DEPLOY_USER@$DEPLOY_HOST" \
-            "DEPLOY_PATH='$DEPLOY_PATH' IMAGE_TAG='$IMAGE_TAG' bash -s" <<'REMOTE_SCRIPT'
+            "DEPLOY_PATH='$DEPLOY_PATH' IMAGE_NAME='$IMAGE_NAME' IMAGE_TAG='$IMAGE_TAG' SERVER_IMAGE_EXISTS='$SERVER_IMAGE_EXISTS' bash -s" <<'REMOTE_SCRIPT'
           set -euo pipefail
           cd "$DEPLOY_PATH"
-          docker compose pull
+          if [[ "$SERVER_IMAGE_EXISTS" != "true" ]]; then
+            docker compose pull
+          fi
           docker compose up -d --remove-orphans
           REMOTE_SCRIPT
 
@@ -151,11 +192,13 @@ jobs:
             echo "- Environment: TEST"
             echo "- Source commit: $GITHUB_SHA"
             echo "- Image: $IMAGE_NAME:$IMAGE_TAG"
+            echo "- GHCR image check: ${{ steps.image-check.outcome }}"
             echo "- Publish image: ${{ steps.publish.outcome }}"
             echo "- Upload Compose: ${{ steps.upload.outcome }}"
+            echo "- TEST server image check: ${{ steps.server-image-check.outcome }}"
             echo "- Start service: ${{ steps.deploy.outcome }}"
             echo "- Health check: ${{ steps.verify.outcome }}"
           } >> "$GITHUB_STEP_SUMMARY"
-          if [[ "${{ steps.publish.outcome }}" != "success" || "${{ steps.upload.outcome }}" != "success" || "${{ steps.deploy.outcome }}" != "success" || "${{ steps.verify.outcome }}" != "success" ]]; then
+          if [[ "${{ steps.image-check.outcome }}" != "success" || ( "${{ steps.publish.outcome }}" != "success" && "${{ steps.publish.outcome }}" != "skipped" ) || "${{ steps.upload.outcome }}" != "success" || "${{ steps.server-image-check.outcome }}" != "success" || "${{ steps.deploy.outcome }}" != "success" || "${{ steps.verify.outcome }}" != "success" ]]; then
             exit 1
           fi
