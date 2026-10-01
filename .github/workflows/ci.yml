@@ -24,7 +24,7 @@ jobs:
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             range="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
           elif [[ "${{ github.event.before }}" == "0000000000000000000000000000000000000000" ]]; then
-            range="${{ github.sha }}"
+            range="${{ github.sha }}^..${{ github.sha }}"
           else
             range="${{ github.event.before }}..${{ github.sha }}"
           fi
