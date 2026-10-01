@@ -35,7 +35,7 @@ jobs:
               continue
             fi
             message="$(git log -1 --format=%s "$sha")"
-            if ! [[ "$message" =~ ^[^[]+\[[a-z]+\]:\ .+ ]]; then
+            if ! [[ "$message" =~ ^[^[:space:]]+([a-z]+|\[[a-z]+\]):\ .+ ]]; then
               echo "Invalid commit message: $sha $message"
               exit 1
             fi

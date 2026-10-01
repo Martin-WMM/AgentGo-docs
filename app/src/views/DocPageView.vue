@@ -27,6 +27,7 @@ async function renderMermaid() {
   await nextTick();
   const nodes = [...document.querySelectorAll<HTMLElement>('.mermaid-diagram')];
   localizeDrawioCards();
+  localizeImageActions();
   if (!nodes.length) return;
   mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default' });
   for (const node of nodes) {
@@ -49,6 +50,14 @@ function localizeDrawioCards() {
     if (edit) { render(h(Icon, { icon: 'lucide:pencil', class: 'size-4', 'aria-hidden': 'true' }), edit); edit.setAttribute('aria-label', t('docs.editDrawio')); edit.title = t('docs.editDrawio'); }
   });
 }
+function localizeImageActions() {
+  document.querySelectorAll<HTMLElement>('.markdown-image').forEach((image) => {
+    const fullscreen = image.querySelector<HTMLButtonElement>('[data-image-action="fullscreen"]');
+    const download = image.querySelector<HTMLButtonElement>('[data-image-action="download"]');
+    if (fullscreen) { render(h(Icon, { icon: 'lucide:maximize-2', class: 'size-4', 'aria-hidden': 'true' }), fullscreen); fullscreen.setAttribute('aria-label', t('docs.toggleFullscreen')); fullscreen.title = t('docs.toggleFullscreen'); }
+    if (download) { render(h(Icon, { icon: 'lucide:download', class: 'size-4', 'aria-hidden': 'true' }), download); download.setAttribute('aria-label', t('actions.download')); download.title = t('actions.download'); }
+  });
+}
 
 onMounted(renderMermaid);
 watch(page, renderMermaid);
@@ -56,7 +65,21 @@ watch(page, renderMermaid);
 function openDrawio(source: string) { drawioSource.value = source; editedDrawio.value = null; drawioDark.value = true; }
 function closeDrawio() { drawioSource.value = null; editedDrawio.value = null; if (document.fullscreenElement) document.exitFullscreen(); }
 async function toggleFullscreen() { if (document.fullscreenElement) await document.exitFullscreen(); else await drawioPanel.value?.requestFullscreen(); }
+async function toggleImageFullscreen(image: HTMLImageElement) { if (document.fullscreenElement) await document.exitFullscreen(); else await image.requestFullscreen(); }
+function downloadImage(image: HTMLImageElement) {
+  const link = document.createElement('a');
+  link.href = image.currentSrc || image.src;
+  link.download = new URL(link.href, window.location.href).pathname.split('/').pop() || 'image';
+  link.click();
+}
 function handleContentClick(event: MouseEvent) {
+  const imageAction = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-image-action]');
+  if (imageAction) {
+    const image = imageAction.closest<HTMLElement>('.markdown-image')?.querySelector<HTMLImageElement>('img');
+    if (imageAction.dataset.imageAction === 'fullscreen' && image) void toggleImageFullscreen(image);
+    if (imageAction.dataset.imageAction === 'download' && image) downloadImage(image);
+    return;
+  }
   const action = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-drawio-action]');
   const card = (event.target as HTMLElement).closest<HTMLElement>('[data-drawio-source]');
   if (!card?.dataset.drawioSource) return;
