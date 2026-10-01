@@ -194,7 +194,7 @@ jobs:
           set -euo pipefail
           cd "$DEPLOY_PATH"
           test "$(docker inspect -f '{{.State.Running}}' agentgo-docs)" = "true"
-          curl --fail --silent --show-error http://127.0.0.1/ > /dev/null
+          curl --fail --silent --show-error http://127.0.0.1:20080/ > /dev/null
           REMOTE_SCRIPT
 
       - name: Write deployment summary
