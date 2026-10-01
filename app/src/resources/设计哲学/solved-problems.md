@@ -9,6 +9,8 @@ summary: 从用户需求、系统能力和扩展能力三个层面分析 AgentGo
 
 AgentGo 的建设重点不是让模型在单次对话中“看起来更聪明”，而是把模型、工具、状态、策略和运行环境组织成一个可理解、可控制、可扩展的智能体系统。
 
+![AgentGo - Requirements Analysis-dark](./_resources/agentgo-requirements-analysis-dark.png)
+
 本文从需求分析的角度说明 AgentGo 为什么存在、需要解决哪些问题，以及这些问题如何共同指向系统的长期演进方向。
 
 ## 一、系统的总体目标
