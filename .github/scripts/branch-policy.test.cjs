@@ -14,8 +14,16 @@ function pr(head, base, source = base, body = '') {
 
 test('accepts feature and fix integration into their declared release', () => {
   for (const kind of ['feature', 'fix']) {
-    assert.equal(validateBranchFlow(pr(kind + '/7-governance', 'release/governance')).sourceBranch, 'release/governance');
+    assert.equal(
+      validateBranchFlow(pr(kind + '/7-governance', 'release/governance')).sourceBranch,
+      'release/governance',
+    );
   }
+});
+
+test('accepts planned two-month milestone branches into their milestone release', () => {
+  const input = pr('feature/26-TW6-1', 'release/26-TW6-1', 'release/26-TW6-1', 'Closes #70');
+  assert.equal(validateBranchFlow(input).sourceBranch, 'release/26-TW6-1');
 });
 
 test('accepts release and hotfix promotion to main', () => {
@@ -26,9 +34,12 @@ test('accepts release and hotfix promotion to main', () => {
 
 test('rejects direct feature/fix promotion to main and invalid integration routes', () => {
   for (const [head, base] of [
-    ['feature/7-work', 'main'], ['fix/7-work', 'main'],
-    ['main', 'release/governance'], ['release/other', 'release/governance'],
-    ['hotfix/7-work', 'release/governance'], ['feature/7-work', 'feature/other'],
+    ['feature/7-work', 'main'],
+    ['fix/7-work', 'main'],
+    ['main', 'release/governance'],
+    ['release/other', 'release/governance'],
+    ['hotfix/7-work', 'release/governance'],
+    ['feature/7-work', 'feature/other'],
     ['dependabot/package', 'main'],
   ]) {
     assert.throws(() => validateBranchFlow(pr(head, base)));
@@ -53,7 +64,12 @@ test('requires the correct linked issue and exact Project declaration', () => {
 });
 
 test('accepts GitHub closing variants and deduplicates issues', () => {
-  const input = pr('feature/7-work', 'release/governance', 'release/governance', 'Fixes #8\nCloses #7');
+  const input = pr(
+    'feature/7-work',
+    'release/governance',
+    'release/governance',
+    'Fixes #8\nCloses #7',
+  );
   assert.deepEqual(validateBranchFlow(input).issueNumbers, [7, 8]);
 });
 
