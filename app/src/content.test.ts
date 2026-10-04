@@ -2,14 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { getPages } from './content';
 
 describe('design documentation navigation', () => {
-  it('selects the requested system design translation under the same page ID', () => {
-    const english = getPages('en-US').find((page) => page.slug === 'system-design');
-    const chinese = getPages('zh-CN').find((page) => page.slug === 'system-design');
-    expect(english).toBeDefined();
-    expect(chinese).toBeDefined();
-    expect(english?.language).toBe('en');
-    expect(chinese?.language).toBe('zh');
-    expect(chinese?.id).toBe(english?.id);
+  it('keeps only the problems and system architecture pages in design philosophy', () => {
+    const pages = getPages('zh-CN');
+    expect(pages.find((page) => page.slug === 'solved-problems')).toBeDefined();
+    expect(pages.find((page) => page.slug === 'system-architecture')).toBeDefined();
+    expect(pages.find((page) => page.slug === 'agent-loop')).toBeUndefined();
+    expect(pages.find((page) => page.slug === 'system-design')).toBeUndefined();
   });
 
   it('renders sequential requirement IDs and status badges in the requirements page', () => {

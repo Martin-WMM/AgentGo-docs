@@ -5,9 +5,10 @@ const PROJECT_URL = 'https://github.com/users/Martin-WMM/projects/2';
 function validateBranchFlow(pr) {
   const head = pr.head.ref;
   const base = pr.base.ref;
-  const release = /^release\/[a-z0-9][a-z0-9._-]*$/;
-  const task = /^(feature|fix|hotfix)\/(\d+)-[a-z0-9][a-z0-9._-]*$/;
+  const release = /^release\/[A-Za-z0-9][A-Za-z0-9._-]*$/;
+  const task = /^(feature|fix|hotfix)\/(\d+)-[A-Za-z0-9][A-Za-z0-9._-]*$/;
   const taskMatch = head.match(task);
+  const milestoneTask = /^(feature|fix)\/\d{2}-TW\d+-\d+$/.test(head);
   let expectedSource;
 
   if (base === 'main') {
@@ -36,12 +37,13 @@ function validateBranchFlow(pr) {
   if (project !== PROJECT_URL) {
     throw new Error('Declare AgentGo Project #2 in the PR body.');
   }
-  const issueNumbers = [...body.matchAll(/\b(?:closes?|closed|fix(?:es|ed)?|resolves?|resolved)\s+#(\d+)\b/gi)]
-    .map((match) => Number(match[1]));
+  const issueNumbers = [
+    ...body.matchAll(/\b(?:closes?|closed|fix(?:es|ed)?|resolves?|resolved)\s+#(\d+)\b/gi),
+  ].map((match) => Number(match[1]));
   if (!issueNumbers.length) {
     throw new Error('Link at least one repository Issue using Closes #<number>.');
   }
-  if (taskMatch && !issueNumbers.includes(Number(taskMatch[2]))) {
+  if (taskMatch && !milestoneTask && !issueNumbers.includes(Number(taskMatch[2]))) {
     throw new Error('The branch issue number must be linked by closing syntax.');
   }
   return { sourceBranch: expectedSource, issueNumbers: [...new Set(issueNumbers)] };
@@ -49,7 +51,9 @@ function validateBranchFlow(pr) {
 
 function validateAncestry(status) {
   if (!['ahead', 'identical'].includes(status)) {
-    throw new Error('The head must include the current target branch; update it without a direct protected-branch push.');
+    throw new Error(
+      'The head must include the current target branch; update it without a direct protected-branch push.',
+    );
   }
 }
 
