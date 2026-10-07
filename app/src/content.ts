@@ -132,9 +132,19 @@ function drawioCard(href: string, sourcePath: string) {
   const filename = href.split('/').pop() || 'diagram.drawio';
   return `<div class="resource-card resource-card--drawio" data-drawio-card data-drawio-source="${encodeURIComponent(xml)}" data-drawio-name="${escapeHtml(filename)}"><span class="resource-card__badge">Drawio</span><span class="resource-card__info"><strong>${escapeHtml(filename)}</strong><small>Drawio diagram</small></span><span class="resource-card__actions"><button type="button" data-drawio-action="download"></button><button type="button" data-drawio-action="edit"></button></span></div>`;
 }
+function stripHtmlTags(value: string) {
+  let previous = '';
+  let current = value;
+  // Repeat until stable so nested/malformed tags cannot leave residual markup.
+  while (previous !== current) {
+    previous = current;
+    current = current.replace(/<\/?[^>]*>/g, '');
+  }
+  return current.replace(/\s+/g, ' ').trim();
+}
 function collapsibleTable(table: string) {
   const headers = [...table.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/gi)]
-    .map((match) => match[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim())
+    .map((match) => stripHtmlTags(match[1]))
     .filter(Boolean)
     .slice(0, 3);
   const label = headers.length ? `Table · ${headers.join(' / ')}` : 'Table';
