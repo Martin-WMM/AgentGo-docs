@@ -23,4 +23,4 @@ An AgentGo application is composed of a model, tools, and a loop that coordinate
 
 ## Next steps
 
-Continue to the [Agent Loop](../设计哲学/agent-loop.md) guide to understand how the runtime makes decisions.
+Continue to the [Agent design](../设计哲学/07-Agent设计/README.md) guide to understand how the runtime makes decisions.
