@@ -9,6 +9,9 @@ COPY packages/ui/package.json packages/ui/package.json
 RUN pnpm install --frozen-lockfile
 
 COPY . .
+# TEST gateway mounts the docs container at /docs/; GitHub Pages keeps the default base.
+ARG VITE_BASE=/docs/
+ENV VITE_BASE=$VITE_BASE
 RUN pnpm build
 
 FROM nginx:1.27-alpine

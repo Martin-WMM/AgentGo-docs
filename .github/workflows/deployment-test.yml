@@ -167,8 +167,13 @@ jobs:
             "DEPLOY_PATH='$DEPLOY_PATH' IMAGE_NAME='$IMAGE_NAME' IMAGE_TAG='$IMAGE_TAG' SERVER_IMAGE_EXISTS='$SERVER_IMAGE_EXISTS' bash -s" <<'REMOTE_SCRIPT'
           set -euo pipefail
           cd "$DEPLOY_PATH"
-          printf 'IMAGE_TAG=%s\n' "$IMAGE_TAG" > .env
+          touch .env
           chmod 600 .env
+          if grep -q '^IMAGE_TAG=' .env; then
+            sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${IMAGE_TAG}/" .env
+          else
+            printf 'IMAGE_TAG=%s\n' "$IMAGE_TAG" >> .env
+          fi
           if [[ "$SERVER_IMAGE_EXISTS" != "true" ]]; then
             docker compose pull agentgo-docs
           fi

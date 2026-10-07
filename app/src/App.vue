@@ -4,17 +4,60 @@ import { Button } from '@agentgo/ui';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
-import { getPages, getSections } from './content';
+import { getPages, getSections, type DocPage } from './content';
 import ThemeLogo from './components/ThemeLogo.vue';
 
 const { t, locale } = useI18n();
 const route = useRoute();
 const sections = computed(() => getSections(locale.value));
+interface SidebarItem {
+  page: DocPage;
+  children: DocPage[];
+}
+function folderOf(page: DocPage) {
+  return page.sourcePath.slice(0, page.sourcePath.lastIndexOf('/'));
+}
+function isReadme(page: DocPage) {
+  return page.sourcePath.endsWith('/README.md');
+}
+const sidebarItems = computed<Record<string, SidebarItem[]>>(() =>
+  Object.fromEntries(
+    sections.value.map((section) => {
+      const parentFolders = new Set(section.pages.filter(isReadme).map(folderOf));
+      const items: SidebarItem[] = [];
+      const parents = new Map<string, SidebarItem>(
+        section.pages
+          .filter((page) => isReadme(page) && parentFolders.has(folderOf(page)))
+          .map((page) => [folderOf(page), { page, children: [] }]),
+      );
+      section.pages.forEach((page) => {
+        const folder = folderOf(page);
+        if (isReadme(page) && parentFolders.has(folder)) {
+          items.push(parents.get(folder)!);
+        } else if (parentFolders.has(folder)) {
+          parents.get(folder)?.children.push(page);
+        } else items.push({ page, children: [] });
+      });
+      parents.forEach((parent) =>
+        parent.children.sort(
+          (a, b) =>
+            (a.metadata.navOrder ?? Number.MAX_SAFE_INTEGER) -
+              (b.metadata.navOrder ?? Number.MAX_SAFE_INTEGER) || a.title.localeCompare(b.title),
+        ),
+      );
+      return [section.id, items];
+    }),
+  ),
+);
 const theme = ref<'light' | 'dark' | 'system'>('system');
 const localeLabel = computed(() => (locale.value === 'zh-CN' ? 'EN' : '中文'));
 const isDocs = computed(() => route.path.startsWith('/docs'));
 const openSections = ref<Record<string, boolean>>({});
+const openPageGroups = ref<Record<string, boolean>>({});
 const searchQuery = ref('');
+function pageGroupId(sectionId: string, pageId: string) {
+  return `${sectionId}:${pageId}`;
+}
 const searchResults = computed(() => {
   const query = searchQuery.value.trim().toLowerCase();
   if (!query) return [];
@@ -58,6 +101,13 @@ onMounted(() => {
     if (theme.value === 'system') applyTheme('system');
   });
   sections.value.forEach((section) => (openSections.value[section.id] = true));
+  Object.entries(sidebarItems.value).forEach(([sectionId, items]) => {
+    items
+      .filter((item) => item.children.length)
+      .forEach((item) => {
+        openPageGroups.value[pageGroupId(sectionId, item.page.id)] = true;
+      });
+  });
 });
 </script>
 
@@ -129,21 +179,63 @@ onMounted(() => {
               aria-hidden="true"
             />
           </button>
-          <nav v-show="openSections[section.id]" class="sidebar-pages">
-            <RouterLink
-              v-for="item in section.pages"
-              :key="item.id"
-              :to="`/docs/${item.section}/${item.slug}`"
-              class="sidebar-page"
-              ><Icon
-                v-if="item.navIcon"
-                :icon="item.navIcon"
-                class="size-4"
-                aria-hidden="true"
-              /><span v-else-if="item.navEmoji" aria-hidden="true">{{ item.navEmoji }}</span
-              >{{ item.title }}</RouterLink
-            >
-          </nav>
+          <Transition name="sidebar-fold">
+            <nav v-if="openSections[section.id]" class="sidebar-pages">
+              <template v-for="item in sidebarItems[section.id]" :key="item.page.id">
+                <div class="sidebar-page-group">
+                  <RouterLink
+                    :to="`/docs/${item.page.section}/${item.page.slug}`"
+                    class="sidebar-page"
+                    ><Icon
+                      v-if="item.page.navIcon"
+                      :icon="item.page.navIcon"
+                      class="size-4"
+                      aria-hidden="true"
+                    /><span v-else-if="item.page.navEmoji" aria-hidden="true">{{
+                      item.page.navEmoji
+                    }}</span
+                    >{{ item.page.title }}</RouterLink
+                  >
+                  <button
+                    v-if="item.children.length"
+                    class="sidebar-page__toggle"
+                    type="button"
+                    :aria-expanded="openPageGroups[pageGroupId(section.id, item.page.id)]"
+                    :aria-label="item.page.title"
+                    @click="
+                      openPageGroups[pageGroupId(section.id, item.page.id)] =
+                        !openPageGroups[pageGroupId(section.id, item.page.id)]
+                    "
+                  >
+                    <Icon
+                      :icon="
+                        openPageGroups[pageGroupId(section.id, item.page.id)]
+                          ? 'lucide:chevron-down'
+                          : 'lucide:chevron-right'
+                      "
+                      class="size-4"
+                      aria-hidden="true"
+                    />
+                  </button>
+                </div>
+                <Transition name="sidebar-fold">
+                  <div
+                    v-if="
+                      !item.children.length || openPageGroups[pageGroupId(section.id, item.page.id)]
+                    "
+                  >
+                    <RouterLink
+                      v-for="child in item.children"
+                      :key="child.id"
+                      :to="`/docs/${child.section}/${child.slug}`"
+                      class="sidebar-page sidebar-page--child"
+                      >{{ child.title }}</RouterLink
+                    >
+                  </div>
+                </Transition>
+              </template>
+            </nav>
+          </Transition>
         </div>
       </aside>
       <main class="docs-main">
@@ -173,9 +265,19 @@ onMounted(() => {
             }}</span>
           </div>
         </div>
-        <RouterView />
+        <RouterView v-slot="{ Component }">
+          <Transition name="document-route" mode="out-in">
+            <component :is="Component" />
+          </Transition>
+        </RouterView>
       </main>
     </div>
-    <main v-else class="landing-main"><RouterView /></main>
+    <main v-else class="landing-main">
+      <RouterView v-slot="{ Component }">
+        <Transition name="document-route" mode="out-in">
+          <component :is="Component" />
+        </Transition>
+      </RouterView>
+    </main>
   </div>
 </template>

@@ -21,7 +21,7 @@ export interface DocPage {
   toc: TocItem[];
 }
 
-export interface DocMetadata { author?: string; date?: string; keywords: string[]; summary?: string; }
+export interface DocMetadata { author?: string; date?: string; keywords: string[]; summary?: string; navOrder?: number; }
 export interface TocItem { id: string; text: string; level: number; }
 export interface DocSection { id: string; title: string; pages: DocPage[]; summary?: string; navIcon?: string; navEmoji?: string; }
 
@@ -64,6 +64,9 @@ function parseFrontMatter(raw: string): { metadata: DocMetadata; body: string } 
     if (key === 'keywords') {
       const list = value.replace(/^\[|\]$/g, '').split(',').map((item) => item.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean);
       metadata.keywords = list;
+    } else if (key === 'navorder') {
+      const navOrder = Number(value);
+      if (Number.isFinite(navOrder)) metadata.navOrder = navOrder;
     } else if (key === 'author' || key === 'date' || key === 'summary') metadata[key] = value;
   });
   return { metadata, body: match[2] };
@@ -96,7 +99,7 @@ function renderStatusTags(html: string) {
   });
 }
 function addRequirementColumns(html: string, sourcePath: string) {
-  if (!sourcePath.endsWith('/solved-problems.md')) return html;
+  if (!sourcePath.endsWith('/user-needs.md')) return html;
   let requirementNumber = 0;
   return html.replace(/<table>([\s\S]*?)<\/table>/g, (_, table: string) => {
     const withHeaders = table.replace(/(<thead>[\s\S]*?<tr>[\s\S]*?)(<\/tr>)/i, '$1<th>需求标号</th><th>需求状态</th>$2');
@@ -129,21 +132,41 @@ function drawioCard(href: string, sourcePath: string) {
   const filename = href.split('/').pop() || 'diagram.drawio';
   return `<div class="resource-card resource-card--drawio" data-drawio-card data-drawio-source="${encodeURIComponent(xml)}" data-drawio-name="${escapeHtml(filename)}"><span class="resource-card__badge">Drawio</span><span class="resource-card__info"><strong>${escapeHtml(filename)}</strong><small>Drawio diagram</small></span><span class="resource-card__actions"><button type="button" data-drawio-action="download"></button><button type="button" data-drawio-action="edit"></button></span></div>`;
 }
+function stripHtmlTags(value: string) {
+  let previous = '';
+  let current = value;
+  // Repeat until stable so nested/malformed tags cannot leave residual markup.
+  while (previous !== current) {
+    previous = current;
+    current = current.replace(/<\/?[^>]*>/g, '');
+  }
+  return current.replace(/\s+/g, ' ').trim();
+}
+function collapsibleTable(table: string) {
+  const headers = [...table.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/gi)]
+    .map((match) => stripHtmlTags(match[1]))
+    .filter(Boolean)
+    .slice(0, 3);
+  const label = headers.length ? `Table · ${headers.join(' / ')}` : 'Table';
+  return `<details class="collapsible-block collapsible-block--table" open><summary>${escapeHtml(label)}</summary><div class="table-scroll">${table}</div></details>`;
+}
 function renderMarkdown(content: string, sourcePath: string) {
   const toc: TocItem[] = [];
   const renderer = new marked.Renderer();
   renderer.code = ({ text, lang }: Tokens.Code) => {
     if (lang?.toLowerCase() === 'mermaid') return `<div class="mermaid-diagram" data-mermaid="${encodeURIComponent(text)}"></div>`;
-    return `<pre><code${lang ? ` class="language-${escapeHtml(lang)}"` : ''}>${escapeHtml(text)}</code></pre>`;
+    const label = lang ? `Code · ${escapeHtml(lang)}` : 'Code block';
+    return `<details class="collapsible-block collapsible-block--code" open><summary><span>${label}</span><button type="button" class="code-copy-button" data-code-copy></button></summary><pre><code${lang ? ` class="language-${escapeHtml(lang)}"` : ''}>${escapeHtml(text)}</code></pre></details>`;
   };
   renderer.heading = ({ text, depth }: Tokens.Heading) => { const id = slugify(text); if (depth <= 3) toc.push({ id, text, level: depth }); return `<h${depth} id="${id}">${text}</h${depth}>`; };
   renderer.image = ({ href, title, text }: Tokens.Image) => resourceKind(href) === 'video' ? `<video class="markdown-video" controls preload="metadata" src="${assetUrl(sourcePath, href)}"></video>` : `<figure class="markdown-image"><div class="markdown-image__actions"><button type="button" data-image-action="fullscreen"></button><button type="button" data-image-action="download"></button></div><img src="${assetUrl(sourcePath, href)}" alt="${escapeHtml(text)}"${title ? ` title="${escapeHtml(title)}"` : ''} loading="lazy" /><figcaption class="image-caption">${escapeHtml(text)}</figcaption></figure>`;
   renderer.link = ({ href, title, text }: Tokens.Link) => { const kind = resourceKind(href); if (href.startsWith('./_resources/') && kind === 'drawio') return drawioCard(href, sourcePath); if (href.startsWith('./_resources/') && kind === 'excalidraw') return resourceCard(href, text, sourcePath, kind); if (href.startsWith('./_resources/') && kind === 'video') return `<video class="markdown-video" controls preload="metadata" src="${assetUrl(sourcePath, href)}"></video>`; return `<a href="${href}"${title ? ` title="${escapeHtml(title)}"` : ''}>${text}</a>`; };
   const html = marked.parse(content, { renderer }) as string;
   return {
-    html: renderStatusTags(addRequirementColumns(html, sourcePath))
-      .replaceAll('<table>', '<div class="table-scroll"><table>')
-      .replaceAll('</table>', '</table></div>'),
+    html: renderStatusTags(addRequirementColumns(html, sourcePath)).replace(
+      /<table>[\s\S]*?<\/table>/g,
+      collapsibleTable,
+    ),
     toc,
   };
 }
@@ -158,12 +181,13 @@ function createVariants() {
     const parts = relative.split('/');
     const filename = parts.at(-1) || 'document';
     const { base: baseName, language } = splitLanguageSuffix(filename);
-    const rawSection = parts.slice(0, -1).join('/') || 'general';
-    const section = normalizedSection(rawSection);
+    const rawTopLevelSection = parts[0] || 'general';
+    const section = normalizedSection(rawTopLevelSection);
     const visual = parseVisualName(baseName);
-    const slug = visual.name.toLowerCase() === 'home' ? 'home' : visual.name;
+    const nestedPath = parts.slice(1, -1).map((segment) => parseVisualName(segment).name);
+    const slug = visual.name.toLowerCase() === 'home' ? 'home' : [...nestedPath, visual.name].join('-');
     const rendered = renderMarkdown(content, sourcePath);
-    const sectionVisual = parseVisualName(rawSection.split('/').at(-1) || rawSection);
+    const sectionVisual = parseVisualName(rawTopLevelSection);
     const page: DocPage = { id: `${section}/${slug}`, section, sectionTitle: displayName(sectionVisual.name), title: titleFromMarkdown(sourcePath, content, visual.name), slug, sourcePath, language, metadata, navIcon: visual.icon, navEmoji: visual.emoji, sectionNavIcon: sectionVisual.icon, sectionNavEmoji: sectionVisual.emoji, content: rawContent, ...rendered };
     return { section, baseName, slug, language, page } satisfies PageVariant;
   });
@@ -174,7 +198,7 @@ function selectVariants(locale: string) {
   const language = languageFromLocale(locale);
   const grouped = new Map<string, PageVariant[]>();
   variants.filter((variant) => variant.slug !== 'home').forEach((variant) => { const key = variant.page.id; grouped.set(key, [...(grouped.get(key) || []), variant]); });
-  return [...grouped.values()].map((group) => group.find((variant) => variant.language === language) || group.find((variant) => variant.language === 'shared') || group.find((variant) => variant.language === 'en') || group[0]).map((variant) => variant.page).sort((a, b) => sectionRank(a.section) - sectionRank(b.section) || a.section.localeCompare(b.section) || a.title.localeCompare(b.title));
+  return [...grouped.values()].map((group) => group.find((variant) => variant.language === language) || group.find((variant) => variant.language === 'shared') || group.find((variant) => variant.language === 'en') || group[0]).map((variant) => variant.page).sort((a, b) => sectionRank(a.section) - sectionRank(b.section) || a.section.localeCompare(b.section) || a.slug.localeCompare(b.slug));
 }
 
 export function getPages(locale: string) { return selectVariants(locale); }
