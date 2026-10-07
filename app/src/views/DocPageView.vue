@@ -28,6 +28,7 @@ async function renderMermaid() {
   const nodes = [...document.querySelectorAll<HTMLElement>('.mermaid-diagram')];
   localizeDrawioCards();
   localizeImageActions();
+  localizeCodeCopyButtons();
   if (!nodes.length) return;
   mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default' });
   for (const node of nodes) {
@@ -58,6 +59,13 @@ function localizeImageActions() {
     if (download) { render(h(Icon, { icon: 'lucide:download', class: 'size-4', 'aria-hidden': 'true' }), download); download.setAttribute('aria-label', t('actions.download')); download.title = t('actions.download'); }
   });
 }
+function localizeCodeCopyButtons() {
+  document.querySelectorAll<HTMLButtonElement>('[data-code-copy]').forEach((button) => {
+    render(h(Icon, { icon: 'lucide:copy', class: 'size-4', 'aria-hidden': 'true' }), button);
+    button.setAttribute('aria-label', t('docs.copyCode'));
+    button.title = t('docs.copyCode');
+  });
+}
 
 onMounted(renderMermaid);
 watch(page, renderMermaid);
@@ -72,7 +80,41 @@ function downloadImage(image: HTMLImageElement) {
   link.download = new URL(link.href, window.location.href).pathname.split('/').pop() || 'image';
   link.click();
 }
+async function copyCode(button: HTMLButtonElement) {
+  const code = button.closest<HTMLElement>('.collapsible-block--code')?.querySelector('code')?.textContent || '';
+  if (!code) return;
+  try {
+    if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(code);
+    else {
+      const textarea = document.createElement('textarea');
+      textarea.value = code;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.append(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      textarea.remove();
+    }
+    render(h(Icon, { icon: 'lucide:check', class: 'size-4', 'aria-hidden': 'true' }), button);
+    button.setAttribute('aria-label', t('docs.codeCopied'));
+    button.title = t('docs.codeCopied');
+    window.setTimeout(() => {
+      render(h(Icon, { icon: 'lucide:copy', class: 'size-4', 'aria-hidden': 'true' }), button);
+      button.setAttribute('aria-label', t('docs.copyCode'));
+      button.title = t('docs.copyCode');
+    }, 1600);
+  } catch {
+    button.setAttribute('aria-label', t('docs.copyCode'));
+  }
+}
 function handleContentClick(event: MouseEvent) {
+  const copyAction = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-code-copy]');
+  if (copyAction) {
+    event.preventDefault();
+    event.stopPropagation();
+    void copyCode(copyAction);
+    return;
+  }
   const imageAction = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-image-action]');
   if (imageAction) {
     const image = imageAction.closest<HTMLElement>('.markdown-image')?.querySelector<HTMLImageElement>('img');

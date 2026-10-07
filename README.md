@@ -45,7 +45,7 @@ Useful sections / 常用文档:
 - [Reference / 参考文档](app/src/resources/参考文档/README.md)
 - [Integration / 集成与扩展](app/src/resources/集成与扩展/README.md)
 - [Secondary Development / 二次开发](app/src/resources/二次开发/README.md)
-- [Architecture / 设计哲学与架构](app/src/resources/设计哲学/system-architecture.md)
+- [Architecture / 设计哲学与架构](app/src/resources/设计哲学/03-架构设计/system-architecture.md)
 
 ## 4. Contribution / 参与贡献
 
