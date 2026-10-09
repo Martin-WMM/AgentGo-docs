@@ -27,7 +27,12 @@ export interface DocSection { id: string; title: string; pages: DocPage[]; summa
 
 const markdownFiles = import.meta.glob('/src/resources/**/*.md', { eager: true, query: '?raw', import: 'default' }) as Record<string, string | MarkdownModule>;
 const resourceFiles = import.meta.glob('/src/resources/**/_resources/*', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
-const resourceTextFiles = import.meta.glob('/src/resources/**/_resources/*', { eager: true, query: '?raw', import: 'default' }) as Record<string, string | MarkdownModule>;
+// Only text diagram sources belong in the JS bundle. Importing PNG/JPG with ?raw
+// previously inlined multi-megabyte binaries into the entry chunk and blanked first paint.
+const resourceTextFiles = import.meta.glob(
+  '/src/resources/**/_resources/*.{drawio,excalidraw,json,svg,txt,xml}',
+  { eager: true, query: '?raw', import: 'default' },
+) as Record<string, string | MarkdownModule>;
 const sectionOrder = ['设计哲学', '快速上手', '参考文档', '集成与扩展', '二次开发', '关于'];
 const defaultSectionIcons: Record<string, string> = {
   设计哲学: 'lucide:compass',

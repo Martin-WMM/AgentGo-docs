@@ -2,7 +2,6 @@
 import { computed, h, nextTick, onMounted, onUnmounted, ref, render, watch } from 'vue';
 import { Icon } from '@iconify/vue';
 import { Button } from '@agentgo/ui';
-import mermaid from 'mermaid';
 import { findPage, findPageIndex, getPages } from '../content';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
@@ -30,6 +29,8 @@ async function renderMermaid() {
   localizeImageActions();
   localizeCodeCopyButtons();
   if (!nodes.length) return;
+  // Keep Mermaid out of the landing/entry chunk so first paint is not blocked by diagram deps.
+  const { default: mermaid } = await import('mermaid');
   mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default' });
   for (const node of nodes) {
     const source = decodeURIComponent(node.dataset.mermaid || '');
