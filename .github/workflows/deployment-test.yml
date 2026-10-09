@@ -178,6 +178,27 @@ jobs:
             docker compose pull agentgo-docs
           fi
           docker compose up -d agentgo-docs
+          # Alias /doc -> /docs on the shared TEST gateway (path typo and short form).
+          gw_conf="$DEPLOY_PATH/nginx/default.conf"
+          if [[ -f "$gw_conf" ]] && ! grep -qE 'location[[:space:]]+=[[:space:]]+/doc[[:space:]]' "$gw_conf"; then
+            tmp="$(mktemp)"
+            awk '
+              { print }
+              $0 == "    location = /docs { return 302 /docs/; }" {
+                print ""
+                print "    location = /doc { return 302 /docs/; }"
+                print "    location = /doc/ { return 302 /docs/; }"
+                print "    location /doc/ { return 302 /docs/; }"
+              }
+            ' "$gw_conf" > "$tmp"
+            # Rewrite in place when possible so bind mounts see content changes;
+            # always restart gateway afterward because inode swaps are not reloaded.
+            cat "$tmp" > "$gw_conf"
+            rm -f "$tmp"
+            docker restart agentgo-gateway-28080
+            sleep 2
+            docker exec agentgo-gateway-28080 nginx -t
+          fi
           REMOTE_SCRIPT
 
       - name: Verify TEST deployment
@@ -199,7 +220,15 @@ jobs:
           set -euo pipefail
           cd "$DEPLOY_PATH"
           test "$(docker inspect -f '{{.State.Running}}' agentgo-docs)" = "true"
+          curl --fail --silent --show-error http://127.0.0.1:20080/health > /dev/null
           curl --fail --silent --show-error http://127.0.0.1:20080/ > /dev/null
+          # SPA fallback must serve index.html for deep links inside the docs container.
+          code="$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:20080/docs/quick-start || true)"
+          test "$code" = "200"
+          # Gateway aliases /doc to /docs.
+          loc="$(curl --silent --output /dev/null --write-out '%{redirect_url}' http://127.0.0.1:28080/doc/)"
+          echo "$loc" | grep -q '/docs/'
+          curl --fail --silent --show-error http://127.0.0.1:28080/docs/ > /dev/null
           REMOTE_SCRIPT
 
       - name: Write deployment summary
