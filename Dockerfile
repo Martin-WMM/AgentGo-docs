@@ -15,6 +15,7 @@ ENV VITE_BASE=$VITE_BASE
 RUN pnpm build
 
 FROM nginx:1.27-alpine
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /workspace/app/dist /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
