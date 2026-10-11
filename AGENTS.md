@@ -97,6 +97,13 @@ Allowed types include `feat`, `fix`, `docs`, `refactor`, `test`, `build`, `ci`, 
 - Release notes must identify the included documentation, API, architecture, and compatibility changes.
 - Deployment failures must fail visibly and must not publish a partial build.
 
+### TEST environment (SSH Compose)
+
+- **Deployment TEST** (`.github/workflows/deployment-test.yml`) is `workflow_dispatch` only on `release/*`.
+- It SSHs to the GitHub `test` environment host (`DEPLOY_*` secrets; typically `martin@www.agentgo.agent.com`) and updates `$DEPLOY_PATH` (AgentGo Compose include for docs).
+- Public docs path is `http://{DEPLOY_HOST}:28080/docs` (container `:20080`). This is independent of GitHub Pages.
+- Promote documentation with the same **dev → local → PR → test** sequence as backend/UI when the change affects shared contracts or gateway paths.
+
 ## Working agreement for agents
 
 1. Read this file before changing code or documentation.
