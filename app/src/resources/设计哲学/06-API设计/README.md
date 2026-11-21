@@ -8,3 +8,5 @@ summary: 规划 AgentGo 对外接口的设计原则与契约组织方式。
 # API设计
 
 本目录将引用后端发布的 OpenAPI 与事件契约，说明接口边界、兼容性与版本演进原则。
+
+全局系统事件见 [system-events_zh.md](system-events_zh.md)（English: [system-events_en.md](system-events_en.md)）。
