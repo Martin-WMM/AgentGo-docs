@@ -9,25 +9,25 @@ summary: Global system event log kept for three months and at most 1,000 rows.
 
 `/api/v1/systemEvents` is the global event log. Every authenticated user reads and writes the same rows. An event is not owned by one user.
 
-| Field | Required | Meaning |
-| --- | --- | --- |
-| `name` | yes | Event name, at most 255 characters. |
-| `domain` | yes | Business domain that produced the event, at most 255 characters. |
-| `operator` | no | Person related to the event. Blank stores the authenticated user. |
-| `comment` | no | Free-form comment, at most 4,000 characters. Blank clears it. |
-| `occurredAt` | no | When the event happened. Create uses the current time when omitted. Update keeps the stored time when omitted. |
+| Field        | Required | Meaning                                                                                                        |
+| ------------ | -------- | -------------------------------------------------------------------------------------------------------------- |
+| `name`       | yes      | Event name, at most 255 characters.                                                                            |
+| `domain`     | yes      | Business domain that produced the event, at most 255 characters.                                               |
+| `operator`   | no       | Person related to the event. Blank stores the authenticated user.                                              |
+| `comment`    | no       | Free-form comment, at most 4,000 characters. Blank clears it.                                                  |
+| `occurredAt` | no       | When the event happened. Create uses the current time when omitted. Update keeps the stored time when omitted. |
 
 `GET /api/v1/systemEvents` returns `PageResponse`. `page` starts at 1. `size` defaults to 20 and must be at most 100. `sort` accepts `name`, `domain`, `operator`, `occurredAt`, and `createdAt`. When `sort` is omitted, events are ordered by `occurredAt` descending. Optional `domain` and `operator` query parameters filter by exact match.
 
 Retention keeps the newest 1,000 events from the last three months. Older rows, and rows beyond that count, are deleted. A create or update outside that window is rejected with `EVENT-002`. A missing id is `EVENT-001`. Missing authentication is `AUTH-002`.
 
-| Action | Method | Success code |
-| --- | --- | --- |
-| List | `GET /api/v1/systemEvents` | `9800` `EVENT-LIST-RETRIEVED` |
-| Create | `POST /api/v1/systemEvents` | `9801` `EVENT-CREATED` |
-| Get | `GET /api/v1/systemEvents/{id}` | `9802` `EVENT-RETRIEVED` |
-| Update | `PUT /api/v1/systemEvents/{id}` | `9803` `EVENT-UPDATED` |
-| Delete | `DELETE /api/v1/systemEvents/{id}` | HTTP 204, empty body |
+| Action | Method                             | Success code                  |
+| ------ | ---------------------------------- | ----------------------------- |
+| List   | `GET /api/v1/systemEvents`         | `9800` `EVENT-LIST-RETRIEVED` |
+| Create | `POST /api/v1/systemEvents`        | `9801` `EVENT-CREATED`        |
+| Get    | `GET /api/v1/systemEvents/{id}`    | `9802` `EVENT-RETRIEVED`      |
+| Update | `PUT /api/v1/systemEvents/{id}`    | `9803` `EVENT-UPDATED`        |
+| Delete | `DELETE /api/v1/systemEvents/{id}` | HTTP 204, empty body          |
 
 Successful responses use `CommonHttpResponse`. Delete does not send the registered `9804` `EVENT-DELETED` code.
 
