@@ -4,6 +4,7 @@ All notable changes to AgentGo Docs are recorded here.
 
 ## [Unreleased]
 
+- Documented the authenticated user system-settings API at `/api/v1/settings`.
 - Added the resource-driven AgentGo documentation site with localized Markdown pages, search, metadata, Mermaid, and resource cards.
 - Added system-aware light/dark theme selection, collapsible navigation, Iconify section icons, and document download/share actions.
 - Added audited Mermaid and Markdown rendering dependencies with a lodash-es security override.

@@ -23,4 +23,4 @@ pnpm add @agentgo/core
 
 ## 下一步
 
-继续阅读 [Agent Loop](../设计哲学/agent-loop.md)，了解运行时如何做出决策。
+继续阅读 [Agent 设计](../设计哲学/07-Agent设计/README.md)，了解运行时如何做出决策。
